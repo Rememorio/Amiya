@@ -10,6 +10,7 @@ allow-lists in service deployments.
 | --- | --- | --- |
 | `soul_file` | `SOUL-Amiya.md` | Change when switching persona. Bundled options: `SOUL-Amiya.md`, `SOUL-Eyjafjalla.md`. |
 | `command_prefixes` | `兔兔,Amiya,阿米娅` | Change when you want different trigger names. Use commas. |
+| `unmatched_policy` | `pass` | Use `silent` when AstrBot has no provider model. Use `codex` only when Codex should handle all non-slash plain text. |
 | `workdir` | empty | Set a project directory when Codex should inspect or edit that project. |
 | `sandbox` | `read-only` | Change to `workspace-write` only when file edits are needed. |
 | `require_admin` | `true` | Controls whether group Codex access is limited to admins and allow-listed users. |
@@ -24,6 +25,7 @@ Use this for first setup.
 ```text
 soul_file=SOUL-Amiya.md
 command_prefixes=兔兔,Amiya,阿米娅
+unmatched_policy=pass
 workdir=
 sandbox=read-only
 require_admin=true
@@ -77,6 +79,7 @@ Avoid `danger-full-access` in group chats.
 | `soul_file` | `ASTRBOT_AMIYA_CODEX_SOUL_FILE`, `AMIYA_CODEX_SOUL_FILE` | `SOUL-Amiya.md` | Persona file. Relative paths resolve from the plugin directory. |
 | `strip_thinking` | `ASTRBOT_AMIYA_CODEX_STRIP_THINKING`, `AMIYA_CODEX_STRIP_THINKING` | `true` | Remove common thinking tags before replying. |
 | `command_prefixes` | `ASTRBOT_AMIYA_CODEX_COMMAND_PREFIXES`, `AMIYA_CODEX_COMMAND_PREFIXES` | `兔兔,Amiya,阿米娅` | Plain text prefixes that trigger the plugin. |
+| `unmatched_policy` | `ASTRBOT_AMIYA_CODEX_UNMATCHED_POLICY`, `AMIYA_CODEX_UNMATCHED_POLICY` | `pass` | What to do with non-slash plain text that does not match a prefix: `pass`, `silent`, or `codex`. |
 | `log_events` | `ASTRBOT_AMIYA_CODEX_LOG_EVENTS`, `AMIYA_CODEX_LOG_EVENTS` | `true` | Log privacy-safe events without message text, group IDs, or user IDs. |
 | `session_enabled` | `ASTRBOT_AMIYA_CODEX_SESSION_ENABLED`, `AMIYA_CODEX_SESSION_ENABLED` | `true` | Use Codex native sessions. When disabled, calls use `--ephemeral`. |
 | `session_ttl_minutes` | `ASTRBOT_AMIYA_CODEX_SESSION_TTL_MINUTES`, `AMIYA_CODEX_SESSION_TTL_MINUTES` | `360` | Drop inactive sessions after this many minutes. |
@@ -88,8 +91,15 @@ Avoid `danger-full-access` in group chats.
 
 ## Commands And Prefixes
 
-The plugin only handles plain text messages matching `command_prefixes`. It does
-not intercept AstrBot native slash commands such as `/help` or `/reset`.
+The plugin never intercepts AstrBot native slash commands such as `/help` or
+`/reset`. Non-slash messages that do not match `command_prefixes` follow
+`unmatched_policy`:
+
+| Value | Behavior |
+| --- | --- |
+| `pass` | Continue the AstrBot pipeline. This preserves native AstrBot chat and other plugins. |
+| `silent` | Stop the message without replying. Use this when AstrBot has no provider model and you only want prefixed Codex chat. |
+| `codex` | Send all non-slash plain text to Codex. Permission settings still apply. |
 
 | Message | Behavior |
 | --- | --- |

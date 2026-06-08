@@ -74,6 +74,14 @@
     "hint": "Native AstrBot slash commands are not intercepted. Example for Eyjafjalla: 艾雅法拉,Eyjafjalla,小羊.",
     "default": "兔兔,Amiya,阿米娅"
   },
+  "unmatched_policy": {
+    "description": "How to handle non-slash plain text messages that do not match command_prefixes.",
+    "type": "string",
+    "options": ["pass", "silent", "codex"],
+    "labels": ["Pass to AstrBot", "Stop silently", "Send to Codex"],
+    "hint": "Slash commands are always passed to AstrBot. Use silent if AstrBot has no provider and you only want prefixed Codex chat.",
+    "default": "pass"
+  },
   "log_events": {
     "description": "Write privacy-safe plugin lifecycle logs.",
     "type": "bool",

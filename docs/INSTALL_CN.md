@@ -74,7 +74,7 @@ SOUL-Eyjafjalla.md
 5. 在插件目录运行：
    - python -m py_compile main.py scripts/package.py tests/test_plugin_core.py
    - python -m unittest discover -s tests -v
-6. 尽量写入本地 AstrBot 插件配置：soul_file=SOUL-Amiya.md，command_prefixes=兔兔,Amiya,阿米娅，sandbox=read-only，require_admin=true，session_enabled=true。不要把本机账号、token、绝对路径写进 Amiya 仓库文件。
+6. 尽量写入本地 AstrBot 插件配置：soul_file=SOUL-Amiya.md，command_prefixes=兔兔,Amiya,阿米娅，sandbox=read-only，require_admin=true，session_enabled=true。如果 AstrBot 没有配置 provider 模型，也设置 unmatched_policy=silent，避免无前缀普通消息落到 AstrBot 默认 LLM 链路报错。不要把本机账号、token、绝对路径写进 Amiya 仓库文件。
 7. 启动 AstrBot，优先用 screen/tmux/nohup 这类后台方式。输出 WebUI 地址、用户名、临时密码或密码设置方式、AstrBot 目录、插件目录、启动/停止命令。
 8. 如果需要 QQ、OneBot 或其他聊天平台登录，停下来告诉我具体要扫码或登录什么；我完成后你继续检查平台连接。
 9. 最后提醒我在聊天里发送：兔兔 连通测试、兔兔 状态、兔兔 请只回复 OK。
@@ -88,6 +88,7 @@ SOUL-Eyjafjalla.md
 | --- | --- |
 | `soul_file` | 先用 `SOUL-Amiya.md`。 |
 | `command_prefixes` | 先用 `兔兔,Amiya,阿米娅`。 |
+| `unmatched_policy` | 兼容 AstrBot 时保持 `pass`；没配 provider 模型时用 `silent`。 |
 | `sandbox` | 先用 `read-only`。 |
 | `workdir` | 先留空。 |
 | `require_admin` | 群聊建议保持 `true`。 |
@@ -120,6 +121,12 @@ SOUL-Eyjafjalla.md
 1. AstrBot 日志里是否加载了 `astrbot_plugin_amiya_codex`。
 2. 平台适配器是否已经连接。
 3. 发送消息是否以 `command_prefixes` 中的前缀开头。
+
+### 无前缀消息触发 AstrBot provider 报错
+
+如果 AstrBot 没有配置 provider 模型，而且你只想用带前缀的 Amiya/Codex 聊天，
+设置 `unmatched_policy=silent`。只有想让 Codex 接管所有非斜杠普通文本时，才用
+`unmatched_policy=codex`。斜杠命令始终放行给 AstrBot。
 
 ### AstrBot 的 `/help`、`/reset` 会被抢吗
 

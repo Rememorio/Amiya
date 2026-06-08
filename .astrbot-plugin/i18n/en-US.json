@@ -52,6 +52,11 @@
       "description": "Comma-separated plain-text prefixes that trigger the plugin.",
       "hint": "Native AstrBot slash commands are not intercepted. Eyjafjalla example: 艾雅法拉,Eyjafjalla,小羊."
     },
+    "unmatched_policy": {
+      "description": "How to handle non-slash plain text messages that do not match command_prefixes.",
+      "labels": ["Pass to AstrBot", "Stop silently", "Send to Codex"],
+      "hint": "Slash commands are always passed to AstrBot. Use silent if AstrBot has no provider and you only want prefixed Codex chat."
+    },
     "log_events": {
       "description": "Write privacy-safe plugin lifecycle logs.",
       "hint": "Logs do not include message text, account IDs, tokens, or local paths."

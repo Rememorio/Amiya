@@ -52,6 +52,11 @@
       "description": "触发插件的普通文本前缀，使用逗号分隔。",
       "hint": "不会拦截 AstrBot 原生斜杠命令。艾雅法拉示例：艾雅法拉,Eyjafjalla,小羊。"
     },
+    "unmatched_policy": {
+      "description": "未命中前缀的非斜杠普通文本如何处理。",
+      "labels": ["放行给 AstrBot", "静默拦截", "交给 Codex"],
+      "hint": "斜杠命令始终放行给 AstrBot。未配置 AstrBot provider、只想用前缀调用 Codex 时，建议使用 silent。"
+    },
     "log_events": {
       "description": "写入隐私安全的插件运行日志。",
       "hint": "日志不包含消息正文、账号 ID、令牌或本机路径。"

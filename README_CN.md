@@ -62,7 +62,7 @@ data/plugins/astrbot_plugin_amiya_codex/
 5. 在插件目录运行：
    - python -m py_compile main.py scripts/package.py tests/test_plugin_core.py
    - python -m unittest discover -s tests -v
-6. 尽量写入本地 AstrBot 插件配置：soul_file=SOUL-Amiya.md，command_prefixes=兔兔,Amiya,阿米娅，sandbox=read-only，require_admin=true，session_enabled=true。不要把本机账号、token、绝对路径写进 Amiya 仓库文件。
+6. 尽量写入本地 AstrBot 插件配置：soul_file=SOUL-Amiya.md，command_prefixes=兔兔,Amiya,阿米娅，sandbox=read-only，require_admin=true，session_enabled=true。如果 AstrBot 没有配置 provider 模型，也设置 unmatched_policy=silent，避免无前缀普通消息落到 AstrBot 默认 LLM 链路报错。不要把本机账号、token、绝对路径写进 Amiya 仓库文件。
 7. 启动 AstrBot，优先用 screen/tmux/nohup 这类后台方式。输出 WebUI 地址、用户名、临时密码或密码设置方式、AstrBot 目录、插件目录、启动/停止命令。
 8. 如果需要 QQ、OneBot 或其他聊天平台登录，停下来告诉我具体要扫码或登录什么；我完成后你继续检查平台连接。
 9. 最后提醒我在聊天里发送：兔兔 连通测试、兔兔 状态、兔兔 请只回复 OK。
@@ -76,6 +76,7 @@ data/plugins/astrbot_plugin_amiya_codex/
 | --- | --- | --- |
 | `soul_file` | `SOUL-Amiya.md` | 默认人格。切换艾雅法拉时填 `SOUL-Eyjafjalla.md`。 |
 | `command_prefixes` | `兔兔,Amiya,阿米娅` | 触发插件的前缀。艾雅法拉可用 `艾雅法拉,Eyjafjalla,小羊`。 |
+| `unmatched_policy` | `pass` | `pass` 兼容 AstrBot 原生处理；没配 provider 时用 `silent`；想让 Codex 接管所有非斜杠普通文本时用 `codex`。 |
 | `workdir` | 留空 | 留空表示 AstrBot 进程目录。需要让 Codex 看某个项目时再填项目目录。 |
 | `sandbox` | `read-only` | 默认只读，先确认链路跑通。 |
 | `require_admin` | `true` | 群聊里只允许群主/管理员和白名单用户调用 Codex。 |
@@ -103,8 +104,10 @@ data/plugins/astrbot_plugin_amiya_codex/
 | `兔兔 新会话` | 重置当前聊天的 Codex session。 |
 | `兔兔 <问题>` | 把问题交给 Codex。 |
 
-插件不会拦截 AstrBot 原生 `/help`、`/reset` 等斜杠命令；只有命中
-`command_prefixes` 的普通文本会被本插件处理。
+插件永远不会拦截 AstrBot 原生 `/help`、`/reset` 等斜杠命令。未命中
+`command_prefixes` 的非斜杠普通文本由 `unmatched_policy` 决定：`pass`
+放行给 AstrBot，`silent` 静默拦截，`codex` 交给 Codex；`codex` 仍然遵守
+`require_admin`、`allow_users` 和 `enable_private`。
 
 ## 推荐配置模板
 
@@ -113,6 +116,7 @@ data/plugins/astrbot_plugin_amiya_codex/
 ```text
 soul_file=SOUL-Amiya.md
 command_prefixes=兔兔,Amiya,阿米娅
+unmatched_policy=pass
 sandbox=read-only
 require_admin=true
 session_enabled=true

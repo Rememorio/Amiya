@@ -23,7 +23,7 @@ except ImportError:  # pragma: no cover - only for very old AstrBot builds
 
 
 PLUGIN_ID = "astrbot_plugin_amiya_codex"
-PLUGIN_VERSION = "0.0.1"
+PLUGIN_VERSION = "0.0.2"
 HANDLER_REGEX = r"^(?!\s*/).+"
 DEFAULT_SOUL_FILE = "SOUL.md"
 DEFAULT_PERSONA_TEXT = "你是阿米娅，一个温柔、认真、可靠的中文助手。"
@@ -34,6 +34,7 @@ DEFAULT_SESSION_MAX_TURNS = 16
 DEFAULT_SESSION_MAX_SESSIONS = 64
 VALID_LANGUAGES = {"zh-CN", "en-US"}
 VALID_SANDBOXES = {"read-only", "workspace-write", "danger-full-access"}
+VALID_UNMATCHED_POLICIES = {"pass", "silent", "codex"}
 
 ENV_ALIASES = {
     "language": ("ASTRBOT_AMIYA_LANGUAGE", "AMIYA_LANGUAGE"),
@@ -49,6 +50,7 @@ ENV_ALIASES = {
     "soul_file": ("ASTRBOT_AMIYA_CODEX_SOUL_FILE", "AMIYA_CODEX_SOUL_FILE"),
     "strip_thinking": ("ASTRBOT_AMIYA_CODEX_STRIP_THINKING", "AMIYA_CODEX_STRIP_THINKING"),
     "command_prefixes": ("ASTRBOT_AMIYA_CODEX_COMMAND_PREFIXES", "AMIYA_CODEX_COMMAND_PREFIXES"),
+    "unmatched_policy": ("ASTRBOT_AMIYA_CODEX_UNMATCHED_POLICY", "AMIYA_CODEX_UNMATCHED_POLICY"),
     "log_events": ("ASTRBOT_AMIYA_CODEX_LOG_EVENTS", "AMIYA_CODEX_LOG_EVENTS"),
     "session_enabled": ("ASTRBOT_AMIYA_CODEX_SESSION_ENABLED", "AMIYA_CODEX_SESSION_ENABLED"),
     "session_ttl_minutes": ("ASTRBOT_AMIYA_CODEX_SESSION_TTL_MINUTES", "AMIYA_CODEX_SESSION_TTL_MINUTES"),
@@ -76,6 +78,7 @@ CONFIG_DEFAULT = {
     "soul_file": "SOUL-Amiya.md",
     "strip_thinking": True,
     "command_prefixes": "兔兔,Amiya,阿米娅",
+    "unmatched_policy": "pass",
     "log_events": True,
     "session_enabled": True,
     "session_ttl_minutes": DEFAULT_SESSION_TTL_MINUTES,
@@ -132,6 +135,7 @@ MESSAGES = {
             "Workdir: {workdir}\n"
             "SOUL: {soul}\n"
             "Session: {session}\n"
+            "Unmatched: {unmatched_policy}\n"
             "Language: {language}\n"
             "Admin only: {require_admin}"
         ),
@@ -189,6 +193,7 @@ MESSAGES = {
             "Workdir: {workdir}\n"
             "SOUL: {soul}\n"
             "Session: {session}\n"
+            "Unmatched: {unmatched_policy}\n"
             "Language: {language}\n"
             "Admin only: {require_admin}"
         ),
@@ -265,15 +270,24 @@ class AmiyaCodexChat(Star):
         raw_text = self._event_text(event)
         text, prefix_matched = self._strip_known_prefix(raw_text)
         if not prefix_matched:
-            return
+            policy = self._unmatched_policy()
+            if policy == "pass":
+                return
+            event.stop_event()
+            if policy == "silent":
+                self._log_info("unmatched message stopped policy=silent")
+                return
+            text = raw_text.strip()
 
-        command = self._command_for(text)
+        command = self._command_for(text) if prefix_matched else None
         context = "private" if event.is_private_chat() else "group"
-        self._log_info(f"request received context={context} command={command or 'codex'}")
+        source = "prefixed" if prefix_matched else "unmatched"
+        self._log_info(f"request received context={context} source={source} command={command or 'codex'}")
 
         if not text:
-            event.stop_event()
-            yield event.plain_result(self._t("help"))
+            if prefix_matched:
+                event.stop_event()
+                yield event.plain_result(self._t("help"))
             return
         if command == "help":
             event.stop_event()
@@ -470,6 +484,10 @@ class AmiyaCodexChat(Star):
     def _sandbox(self) -> str:
         value = str(self._config_value("sandbox", "read-only")).strip()
         return value if value in VALID_SANDBOXES else "read-only"
+
+    def _unmatched_policy(self) -> str:
+        value = str(self._config_value("unmatched_policy", CONFIG_DEFAULT["unmatched_policy"])).strip().lower()
+        return value if value in VALID_UNMATCHED_POLICIES else CONFIG_DEFAULT["unmatched_policy"]
 
     def _command_prefixes(self) -> Tuple[str, ...]:
         prefixes = sorted(
@@ -871,6 +889,7 @@ class AmiyaCodexChat(Star):
             workdir=self._workdir_label(),
             soul=soul_state,
             session=self._session_summary(),
+            unmatched_policy=self._unmatched_policy(),
             language=self._language(),
             require_admin=self._t("yes") if self._config_bool("require_admin", True) else self._t("no"),
         )

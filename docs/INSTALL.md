@@ -80,7 +80,7 @@ Goals:
 5. In the plugin directory, run:
    - python -m py_compile main.py scripts/package.py tests/test_plugin_core.py
    - python -m unittest discover -s tests -v
-6. If possible, write local AstrBot plugin config: soul_file=SOUL-Amiya.md, command_prefixes=兔兔,Amiya,阿米娅, sandbox=read-only, require_admin=true, session_enabled=true. Do not write local accounts, tokens, or absolute machine paths into the Amiya repository files.
+6. If possible, write local AstrBot plugin config: soul_file=SOUL-Amiya.md, command_prefixes=兔兔,Amiya,阿米娅, sandbox=read-only, require_admin=true, session_enabled=true. If AstrBot has no provider model configured, also set unmatched_policy=silent so non-prefixed ordinary messages do not fall through to AstrBot's default LLM path. Do not write local accounts, tokens, or absolute machine paths into the Amiya repository files.
 7. Start AstrBot, preferably in the background with screen/tmux/nohup. Report the WebUI URL, username, temporary password or password setup method, AstrBot directory, plugin directory, and start/stop commands.
 8. If QQ, OneBot, or another chat platform requires login, stop and tell me exactly what I must scan or log into; continue checking the platform connection after I finish.
 9. At the end, remind me to test in chat with: 兔兔 连通测试, 兔兔 状态, 兔兔 请只回复 OK.
@@ -94,6 +94,7 @@ Open the `Amiya Codex Chat` plugin configuration page in AstrBot WebUI.
 | --- | --- |
 | `soul_file` | Start with `SOUL-Amiya.md`. |
 | `command_prefixes` | Start with `兔兔,Amiya,阿米娅`. |
+| `unmatched_policy` | Keep `pass` for AstrBot compatibility. Use `silent` if AstrBot has no provider model. |
 | `sandbox` | Start with `read-only`. |
 | `workdir` | Leave empty at first. |
 | `require_admin` | Keep `true` for group chats. |
@@ -128,6 +129,13 @@ Check:
 1. AstrBot logs show `astrbot_plugin_amiya_codex` loaded.
 2. The platform adapter is connected.
 3. The message starts with one configured `command_prefixes` value.
+
+### Non-Prefixed Messages Trigger AstrBot Provider Errors
+
+Set `unmatched_policy=silent` if AstrBot has no provider model configured and
+you only want prefixed Amiya/Codex chat. Use `unmatched_policy=codex` only when
+Codex should handle every non-slash plain text message. Slash commands are
+always passed to AstrBot.
 
 ### Does It Intercept AstrBot Slash Commands
 

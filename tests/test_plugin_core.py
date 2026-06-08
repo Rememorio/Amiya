@@ -61,9 +61,20 @@ def _load_module(name: str, path: Path):
 
 
 class _FakeEvent:
-    def __init__(self, sender_name: str = "chat user", message_str: str = "") -> None:
+    def __init__(
+        self,
+        sender_name: str = "chat user",
+        message_str: str = "",
+        *,
+        private: bool = False,
+        admin: bool = False,
+        sender_id: str = "10000",
+    ) -> None:
         self._sender_name = sender_name
         self.message_str = message_str
+        self._private = private
+        self._admin = admin
+        self._sender_id = sender_id
         self.stopped = False
 
     def get_message_str(self) -> str:
@@ -73,10 +84,28 @@ class _FakeEvent:
         return self._sender_name
 
     def is_private_chat(self) -> bool:
-        return False
+        return self._private
+
+    def is_admin(self) -> bool:
+        return self._admin
+
+    def get_sender_id(self) -> str:
+        return self._sender_id
+
+    def get_platform_id(self) -> str:
+        return "test-platform"
+
+    def get_group_id(self) -> str:
+        return "test-group"
+
+    def get_session_id(self) -> str:
+        return "test-session"
 
     def stop_event(self) -> None:
         self.stopped = True
+
+    def plain_result(self, text: str) -> str:
+        return text
 
 
 class PluginCoreTests(unittest.IsolatedAsyncioTestCase):
@@ -106,7 +135,7 @@ class PluginCoreTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(plugin._strip_known_prefix("AmiyaBot status"), ("AmiyaBot status", False))
         self.assertEqual(plugin._strip_known_prefix("ordinary chat"), ("ordinary chat", False))
 
-    async def test_unmatched_messages_continue_pipeline(self) -> None:
+    async def test_unmatched_policy_pass_continues_pipeline(self) -> None:
         plugin = self._plugin({"command_prefixes": "兔兔"})
         event = _FakeEvent(message_str="ordinary chat")
 
@@ -116,6 +145,88 @@ class PluginCoreTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertFalse(event.stopped)
         self.assertEqual(results, [])
+
+    async def test_unmatched_policy_silent_stops_without_reply(self) -> None:
+        plugin = self._plugin({"command_prefixes": "兔兔", "unmatched_policy": "silent"})
+        event = _FakeEvent(message_str="ordinary chat")
+
+        results = []
+        async for result in plugin.on_prefixed_message(event):
+            results.append(result)
+
+        self.assertTrue(event.stopped)
+        self.assertEqual(results, [])
+
+    async def test_unmatched_policy_codex_routes_plain_text_to_codex(self) -> None:
+        plugin = self._plugin(
+            {
+                "command_prefixes": "兔兔",
+                "unmatched_policy": "codex",
+                "require_admin": False,
+                "session_enabled": False,
+            }
+        )
+        event = _FakeEvent(message_str="你是谁呀")
+        seen = {}
+
+        async def fake_run_codex(event_arg, text, session):
+            seen["event"] = event_arg
+            seen["text"] = text
+            seen["session"] = session
+            return "codex reply", True, None
+
+        plugin._run_codex = fake_run_codex
+
+        results = []
+        async for result in plugin.on_prefixed_message(event):
+            results.append(result)
+
+        self.assertTrue(event.stopped)
+        self.assertEqual(results, ["codex reply"])
+        self.assertIs(seen["event"], event)
+        self.assertEqual(seen["text"], "你是谁呀")
+        self.assertIsNone(seen["session"])
+
+    async def test_unmatched_policy_codex_does_not_run_plugin_commands_without_prefix(self) -> None:
+        plugin = self._plugin(
+            {
+                "command_prefixes": "兔兔",
+                "unmatched_policy": "codex",
+                "require_admin": False,
+                "session_enabled": False,
+            }
+        )
+        event = _FakeEvent(message_str="状态")
+
+        async def fake_run_codex(event_arg, text, session):
+            del event_arg, session
+            return f"codex saw: {text}", True, None
+
+        plugin._run_codex = fake_run_codex
+
+        results = []
+        async for result in plugin.on_prefixed_message(event):
+            results.append(result)
+
+        self.assertTrue(event.stopped)
+        self.assertEqual(results, ["codex saw: 状态"])
+
+    async def test_unmatched_policy_codex_keeps_group_permission_gate(self) -> None:
+        plugin = self._plugin({"command_prefixes": "兔兔", "unmatched_policy": "codex"})
+        event = _FakeEvent(message_str="ordinary chat", admin=False)
+
+        async def fake_run_codex(event_arg, text, session):
+            del event_arg, text, session
+            raise AssertionError("permission gate should run before Codex")
+
+        plugin._run_codex = fake_run_codex
+
+        results = []
+        async for result in plugin.on_prefixed_message(event):
+            results.append(result)
+
+        self.assertTrue(event.stopped)
+        self.assertEqual(results, [plugin._t("permission_denied")])
 
     def test_soul_file_can_select_eyjafjalla(self) -> None:
         plugin = self._plugin({"soul_file": "SOUL-Eyjafjalla.md"})

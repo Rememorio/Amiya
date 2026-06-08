@@ -65,7 +65,7 @@ Goals:
 5. In the plugin directory, run:
    - python -m py_compile main.py scripts/package.py tests/test_plugin_core.py
    - python -m unittest discover -s tests -v
-6. If possible, write local AstrBot plugin config: soul_file=SOUL-Amiya.md, command_prefixes=兔兔,Amiya,阿米娅, sandbox=read-only, require_admin=true, session_enabled=true. Do not write local accounts, tokens, or absolute machine paths into the Amiya repository files.
+6. If possible, write local AstrBot plugin config: soul_file=SOUL-Amiya.md, command_prefixes=兔兔,Amiya,阿米娅, sandbox=read-only, require_admin=true, session_enabled=true. If AstrBot has no provider model configured, also set unmatched_policy=silent so non-prefixed ordinary messages do not fall through to AstrBot's default LLM path. Do not write local accounts, tokens, or absolute machine paths into the Amiya repository files.
 7. Start AstrBot, preferably in the background with screen/tmux/nohup. Report the WebUI URL, username, temporary password or password setup method, AstrBot directory, plugin directory, and start/stop commands.
 8. If QQ, OneBot, or another chat platform requires login, stop and tell me exactly what I must scan or log into; continue checking the platform connection after I finish.
 9. At the end, remind me to test in chat with: 兔兔 连通测试, 兔兔 状态, 兔兔 请只回复 OK.
@@ -79,6 +79,7 @@ Open this plugin's configuration page in AstrBot WebUI. Start with these fields:
 | --- | --- | --- |
 | `soul_file` | `SOUL-Amiya.md` | Use `SOUL-Eyjafjalla.md` for the Eyjafjalla persona. |
 | `command_prefixes` | `兔兔,Amiya,阿米娅` | Text prefixes that trigger the plugin. Eyjafjalla example: `艾雅法拉,Eyjafjalla,小羊`. |
+| `unmatched_policy` | `pass` | `pass` keeps AstrBot compatibility. Use `silent` when AstrBot has no provider, or `codex` to let Codex handle all non-slash plain text. |
 | `workdir` | empty | Empty means the AstrBot process directory. Set a project directory only when Codex should see it. |
 | `sandbox` | `read-only` | Keep read-only until the chat path is confirmed. |
 | `require_admin` | `true` | In group chats, only admins and allow-listed users can call Codex. |
@@ -106,8 +107,11 @@ The first two commands do not call Codex. The third command runs Codex CLI.
 | `兔兔 新会话` | Reset the Codex session for this chat. |
 | `兔兔 <prompt>` | Send the prompt to Codex. |
 
-The plugin does not intercept AstrBot's native slash commands such as `/help` or
-`/reset`. It only handles plain text messages matching `command_prefixes`.
+The plugin never intercepts AstrBot's native slash commands such as `/help` or
+`/reset`. Non-slash messages that do not match `command_prefixes` follow
+`unmatched_policy`: `pass` sends them back to AstrBot, `silent` stops them
+without a reply, and `codex` sends them to Codex while still respecting
+`require_admin`, `allow_users`, and `enable_private`.
 
 ## Configuration Recipes
 
@@ -116,6 +120,7 @@ Safe chat:
 ```text
 soul_file=SOUL-Amiya.md
 command_prefixes=兔兔,Amiya,阿米娅
+unmatched_policy=pass
 sandbox=read-only
 require_admin=true
 session_enabled=true
