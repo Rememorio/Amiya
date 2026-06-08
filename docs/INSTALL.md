@@ -1,64 +1,141 @@
 # Installation
 
-This guide assumes you already have AstrBot and a supported platform adapter
-running. The plugin does not replace AstrBot or the adapter; it only adds a
-Codex-backed chat handler.
+This plugin depends on AstrBot's plugin system and platform adapters. Connect
+AstrBot to your chat platform first, then install Amiya Codex Chat.
 
-## 1. Prepare Codex CLI
+## 1. Install And Start AstrBot
 
-Install and authenticate Codex CLI by following the official Codex
-documentation for your platform. On the machine that runs AstrBot, verify:
+Follow AstrBot's official project and documentation:
+<https://github.com/AstrBotDevs/AstrBot>
+
+Confirm both are true:
+
+- AstrBot WebUI is reachable.
+- Your platform adapter can send and receive messages, such as OneBot, QQ
+  official, Telegram, Discord, or WeCom.
+
+This plugin does not replace platform adapters and does not handle QQ login,
+OneBot connection setup, or AstrBot provider configuration.
+
+## 2. Prepare Codex CLI
+
+Install and authenticate Codex CLI on the same machine that runs AstrBot. Verify
+from the same Python/service environment that starts AstrBot:
 
 ```bash
 codex --version
 codex exec --help
 ```
 
-If AstrBot runs under a service manager, make sure that service has the same
-environment needed to find and run `codex`.
+If the command works in your shell but AstrBot says Codex is missing, the AstrBot
+process probably has a different PATH. Set `codex_binary` to the full executable
+path or fix the service environment.
 
-## 2. Build the Plugin Zip
+## 3. Install The Plugin
 
-From this repository:
+### Option A: Install From Release
 
-```bash
-python scripts/package.py
+1. Download `astrbot_plugin_amiya_codex-<version>.zip` from GitHub Releases.
+2. Open AstrBot WebUI.
+3. Upload the zip in the plugin manager.
+4. Restart AstrBot or reload plugins from the WebUI.
+
+### Option B: Local Plugin Directory
+
+Place this repository under AstrBot's plugin directory:
+
+```text
+data/plugins/astrbot_plugin_amiya_codex/
 ```
 
-The package is written to `dist/astrbot_plugin_amiya_codex-<version>.zip`. The
-zip root contains `main.py`, `metadata.yaml`, `_conf_schema.json`, plugin i18n
-resources, documentation, and bundled `SOUL*.md` persona files.
+The plugin root should contain:
 
-## 3. Install into AstrBot
+```text
+main.py
+metadata.yaml
+_conf_schema.json
+SOUL-Amiya.md
+SOUL-Eyjafjalla.md
+```
 
-Use one of these installation methods:
+Restart AstrBot or reload plugins.
 
-- Upload or install the generated zip through AstrBot's plugin manager.
-- Place this repository under AstrBot's `data/plugins` directory as a local
-  plugin, then restart AstrBot or reload plugins from the WebUI.
+## 4. Natural-Language Install With Codex
 
-After installation, open AstrBot's plugin configuration page and confirm that
-`Amiya Codex Chat` is listed. Configure `soul_file`, `sandbox`, `require_admin`,
-and other settings as needed.
+If the target machine already has Codex working, let Codex adapt the install to
+that environment:
 
-The repository includes `SOUL-Amiya.md` and `SOUL-Eyjafjalla.md`, and the plugin
-config defaults to `SOUL-Amiya.md`. If you use your own persona file, place it
-in the plugin directory or use a private runtime configuration path.
+```text
+Please install https://github.com/Rememorio/Amiya as an AstrBot plugin.
+Requirements:
+1. First find AstrBot's data/plugins directory. If you cannot find it, ask me.
+2. Clone or update the repository at data/plugins/astrbot_plugin_amiya_codex.
+3. Do not write local accounts, tokens, or absolute machine paths into repository files.
+4. Run python -m py_compile main.py scripts/package.py tests/test_plugin_core.py.
+5. Run python -m unittest discover -s tests -v.
+6. Remind me to configure soul_file, command_prefixes, sandbox, and require_admin in AstrBot WebUI.
+7. If AstrBot is already running, explain that I need to reload plugins or restart AstrBot, but do not stop my service without asking.
+```
 
-## 4. Verify in Chat
+## 5. Fill Minimal Configuration
 
-Examples below use the default plugin prefix:
+Open the `Amiya Codex Chat` plugin configuration page in AstrBot WebUI.
+
+| Field | Recommendation |
+| --- | --- |
+| `soul_file` | Start with `SOUL-Amiya.md`. |
+| `command_prefixes` | Start with `兔兔,Amiya,阿米娅`. |
+| `sandbox` | Start with `read-only`. |
+| `workdir` | Leave empty at first. |
+| `require_admin` | Keep `true` for group chats. |
+| `allow_users` | Fill only when non-admin users should call Codex. |
+
+Save the configuration. Reload or restart AstrBot if the plugin is not reloaded
+automatically.
+
+## 6. Verify
+
+Send these messages in chat:
 
 ```text
 兔兔 连通测试
-兔兔 帮助
-兔兔 介绍一下你自己
+兔兔 状态
+兔兔 请只回复 OK
 ```
 
-The first two commands do not call Codex. The last command starts a Codex run.
+Expected result:
 
-## Upgrade
+- `连通测试` replies: plugin and platform path are connected.
+- `状态` shows `SOUL: loaded from SOUL-Amiya.md`: persona loading is correct.
+- The third message returns `OK` or a close fixed answer: Codex CLI execution is
+  working.
 
-Build a new zip, install it through AstrBot's plugin manager, and reload the
-plugin. Runtime configuration is managed by AstrBot and should not be stored in
-this public repository.
+## FAQ
+
+### No Reply In Chat
+
+Check:
+
+1. AstrBot logs show `astrbot_plugin_amiya_codex` loaded.
+2. The platform adapter is connected.
+3. The message starts with one configured `command_prefixes` value.
+
+### Does It Intercept AstrBot Slash Commands
+
+No. The plugin does not handle native slash commands such as `/help` or `/reset`.
+
+### Do I Need An AstrBot Model API Key
+
+No. This plugin calls local Codex CLI directly and does not use AstrBot provider
+API key / base URL settings.
+
+### Use The Eyjafjalla Persona
+
+Set:
+
+```text
+soul_file=SOUL-Eyjafjalla.md
+command_prefixes=艾雅法拉,Eyjafjalla,小羊
+```
+
+Save, reload the plugin, and test with `艾雅法拉 状态`.

@@ -1,64 +1,134 @@
 # Amiya Codex Chat
 
-Amiya Codex Chat 是一个 AstrBot 插件，用于把带前缀的聊天消息转发给
-Codex CLI，并把最终结果回复回聊天平台。它的目标是保持轻量、可配置、适合公开
-发布：人格由 `SOUL` 文件定义；Codex 默认使用保守沙箱；开启会话后，插件会使用
-Codex 原生 session 并通过 thread id 恢复上下文。
+[English](README.md)
 
-本仓库是公开仓库。请不要提交账号 ID、令牌、私有路径或本机专属配置。
+Amiya Codex Chat 是一个运行在 [AstrBot](https://github.com/AstrBotDevs/AstrBot)
+上的插件：它监听指定前缀的聊天消息，调用本机 Codex CLI，再把最终回答发回聊天平台。
 
-[English README](README.md)
+> Credit: 多平台接入、插件系统、配置 WebUI 和消息事件能力由
+> [AstrBotDevs/AstrBot](https://github.com/AstrBotDevs/AstrBot) 提供。本项目不是
+> AstrBot 官方插件。
 
-## 功能
+## 适合什么场景
 
-- 使用 AstrBot Star 插件布局，包含 `main.py`、`metadata.yaml`、
-  `_conf_schema.json` 和 WebUI i18n 资源。
-- 支持 AstrBot 的 OneBot、QQ 官方、Telegram、Discord、Slack、Kook、企业微信、
-  Lark、DingTalk、Satori 等平台适配器。
-- 人格文件可配置。仓库默认使用 `SOUL-Amiya.md`，并内置
-  `SOUL-Eyjafjalla.md` 作为可选示例；通用回退文件名为 `SOUL.md`。
-- 用户可见回复支持 `zh-CN` 和 `en-US`。
-- 内置命令：帮助、连通测试、运行状态、人格状态、会话状态、会话重置和 Codex 聊天。
-- 兼容 AstrBot 原生 `/` 斜杠命令。插件只处理配置前缀命中的普通文本消息。
-- Codex 原生 session 恢复，支持过期时间、轮数、活跃会话数和清理策略。
-- 记录隐私安全的运行日志，不包含消息正文或账号 ID。
-- 默认安全策略保守：Codex 使用 `read-only` 沙箱，群聊里仅管理员和白名单用户
-  可以调用 Codex。
-- 关闭会话记忆时使用 `codex exec --ephemeral`。
+- 在 QQ / OneBot / Telegram / Discord / 企业微信等 AstrBot 已支持的平台里调用
+  Codex。
+- 用 `SOUL*.md` 文件定义人格，例如默认的 `SOUL-Amiya.md` 或
+  `SOUL-Eyjafjalla.md`。
+- 需要简单、可控的 IM 入口，而不是把 AstrBot 配成新的大模型服务提供商。
 
-## 运行要求
+## 你需要先准备
 
-- 已安装并能正常运行的官方 AstrBot。
-- 已配置可用的 AstrBot 平台适配器。
-- 运行 AstrBot 的机器上已安装并登录 Codex CLI。
-- AstrBot 所在 Python 环境能从进程环境中执行 `codex`。
+1. 已运行 AstrBot，并且平台适配器已经能正常收发消息。
+2. 运行 AstrBot 的机器上已经安装并登录 Codex CLI。
+3. AstrBot 进程能执行 `codex`。如果 AstrBot 是 systemd、Docker、screen、pm2 等方式
+   启动，确认它的 PATH 里也能找到 Codex。
 
-## 快速开始
-
-构建插件 zip：
+在 AstrBot 所在环境里先验证：
 
 ```bash
-python scripts/package.py
+codex --version
+codex exec --help
 ```
 
-通过 AstrBot 插件管理器安装 `dist/` 中生成的 zip，或者把本仓库放到 AstrBot 的
-`data/plugins` 目录作为本地插件。在 AstrBot 插件配置中，可以保留默认人格文件
-`SOUL-Amiya.md`，也可以把 `soul_file` 指向 `SOUL-Eyjafjalla.md` 或你自己的文件。
+## 安装
 
-下面示例使用默认插件前缀：
+推荐从 GitHub Release 下载 `astrbot_plugin_amiya_codex-<version>.zip`，然后在
+AstrBot WebUI 的插件管理页面上传安装。
+
+本地开发或手动安装时，也可以把仓库放进 AstrBot 的 `data/plugins` 目录：
 
 ```text
-兔兔 帮助
-兔兔 连通测试
-兔兔 状态
-兔兔 人格
-兔兔 会话状态
-兔兔 新会话
-兔兔 介绍一下你自己
+data/plugins/astrbot_plugin_amiya_codex/
 ```
 
-如果切换到艾雅法拉人格，可以同时把 `command_prefixes` 改成类似
-`艾雅法拉,Eyjafjalla,小羊`。
+安装后重启 AstrBot，或在 WebUI 里重载插件。
+
+### 用 Codex 自然语言安装
+
+如果另一台机器已经能运行 Codex，可以直接把下面这段话发给 Codex：
+
+```text
+请帮我把 https://github.com/Rememorio/Amiya 安装成 AstrBot 插件。
+要求：
+1. 先找到 AstrBot 的 data/plugins 目录；如果找不到，先问我。
+2. 把仓库克隆或更新到 data/plugins/astrbot_plugin_amiya_codex。
+3. 不要把任何本机账号、token、绝对路径写进仓库文件。
+4. 运行 python -m py_compile main.py scripts/package.py tests/test_plugin_core.py。
+5. 运行 python -m unittest discover -s tests -v。
+6. 提醒我在 AstrBot WebUI 里配置 soul_file、command_prefixes、sandbox、require_admin。
+7. 如果 AstrBot 正在运行，说明需要重载插件或重启 AstrBot，但不要擅自停止我的服务。
+```
+
+## 最小配置
+
+打开 AstrBot WebUI，进入本插件的配置页。先只改这些字段：
+
+| 字段 | 推荐值 | 说明 |
+| --- | --- | --- |
+| `soul_file` | `SOUL-Amiya.md` | 默认人格。切换艾雅法拉时填 `SOUL-Eyjafjalla.md`。 |
+| `command_prefixes` | `兔兔,Amiya,阿米娅` | 触发插件的前缀。艾雅法拉可用 `艾雅法拉,Eyjafjalla,小羊`。 |
+| `workdir` | 留空 | 留空表示 AstrBot 进程目录。需要让 Codex 看某个项目时再填项目目录。 |
+| `sandbox` | `read-only` | 默认只读，先确认链路跑通。 |
+| `require_admin` | `true` | 群聊里只允许群主/管理员和白名单用户调用 Codex。 |
+| `allow_users` | 留空 | 需要给非管理员授权时，填发送者 ID，多个用英文逗号分隔。不要提交到仓库。 |
+
+保存配置后，在聊天里测试：
+
+```text
+兔兔 连通测试
+兔兔 状态
+兔兔 请只回复 OK
+```
+
+前两条不调用 Codex；第三条会真正走 Codex CLI。
+
+## 常用命令
+
+| 消息 | 行为 |
+| --- | --- |
+| `兔兔 帮助` | 查看命令。 |
+| `兔兔 连通测试` | 检查插件是否在线，不调用 Codex。 |
+| `兔兔 状态` | 查看版本、沙箱、人格、会话等状态。 |
+| `兔兔 人格` | 查看当前人格文件是否加载成功。 |
+| `兔兔 会话状态` | 查看当前聊天的 Codex session 状态。 |
+| `兔兔 新会话` | 重置当前聊天的 Codex session。 |
+| `兔兔 <问题>` | 把问题交给 Codex。 |
+
+插件不会拦截 AstrBot 原生 `/help`、`/reset` 等斜杠命令；只有命中
+`command_prefixes` 的普通文本会被本插件处理。
+
+## 推荐配置模板
+
+安全聊天：
+
+```text
+soul_file=SOUL-Amiya.md
+command_prefixes=兔兔,Amiya,阿米娅
+sandbox=read-only
+require_admin=true
+session_enabled=true
+```
+
+艾雅法拉人格：
+
+```text
+soul_file=SOUL-Eyjafjalla.md
+command_prefixes=艾雅法拉,Eyjafjalla,小羊
+sandbox=read-only
+require_admin=true
+```
+
+受控项目助手：
+
+```text
+workdir=<你的项目目录>
+sandbox=workspace-write
+require_admin=true
+allow_users=<可信用户 ID>
+```
+
+`danger-full-access` 只应在你明确接受风险的受控环境里使用。
 
 ## 文档
 
@@ -67,11 +137,13 @@ python scripts/package.py
 - [Installation](docs/INSTALL.md)
 - [Configuration](docs/CONFIGURATION.md)
 
-## 安全建议
+## 开发
 
-除非明确需要让机器人改文件，否则保持 `read-only` 沙箱。群聊场景建议保持
-`require_admin` 开启，只把可信操作者加入 `allow_users`。不要在人格文件、
-文档、提交信息或 issue 中写入密钥、账号标识、真实本机路径等敏感信息。
+```bash
+python -m py_compile main.py scripts/package.py tests/test_plugin_core.py
+python -m unittest discover -s tests -v
+python scripts/package.py
+```
 
 ## 许可证
 
