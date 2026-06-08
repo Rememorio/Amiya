@@ -19,12 +19,12 @@ Amiya Codex Chat 是一个运行在 [AstrBot](https://github.com/AstrBotDevs/Ast
 
 ## 你需要先准备
 
-1. 已运行 AstrBot，并且平台适配器已经能正常收发消息。
-2. 运行 AstrBot 的机器上已经安装并登录 Codex CLI。
+1. 运行目标机器上已经安装并登录 Codex CLI。
+2. 如果你已有 AstrBot，确认平台适配器已经能正常收发消息。
 3. AstrBot 进程能执行 `codex`。如果 AstrBot 是 systemd、Docker、screen、pm2 等方式
    启动，确认它的 PATH 里也能找到 Codex。
 
-在 AstrBot 所在环境里先验证：
+先验证 Codex：
 
 ```bash
 codex --version
@@ -44,20 +44,28 @@ data/plugins/astrbot_plugin_amiya_codex/
 
 安装后重启 AstrBot，或在 WebUI 里重载插件。
 
-### 用 Codex 自然语言安装
+### 用 Codex 一个 prompt 从零部署
 
-如果另一台机器已经能运行 Codex，可以直接把下面这段话发给 Codex：
+如果另一台机器只有 Codex，还没有 AstrBot，可以直接把下面这段话发给 Codex。它会
+从 AstrBot 官方仓库拉取项目、创建环境、安装插件并启动服务；只有 QQ 登录、扫码、
+系统密码这类必须人工介入的步骤才停下来。
 
 ```text
-请帮我把 https://github.com/Rememorio/Amiya 安装成 AstrBot 插件。
-要求：
-1. 先找到 AstrBot 的 data/plugins 目录；如果找不到，先问我。
-2. 把仓库克隆或更新到 data/plugins/astrbot_plugin_amiya_codex。
-3. 不要把任何本机账号、token、绝对路径写进仓库文件。
-4. 运行 python -m py_compile main.py scripts/package.py tests/test_plugin_core.py。
-5. 运行 python -m unittest discover -s tests -v。
-6. 提醒我在 AstrBot WebUI 里配置 soul_file、command_prefixes、sandbox、require_admin。
-7. 如果 AstrBot 正在运行，说明需要重载插件或重启 AstrBot，但不要擅自停止我的服务。
+请在这台机器上端到端部署 AstrBot + Amiya Codex Chat。
+除非遇到 QQ/聊天平台登录或扫码、系统密码/sudo、网络不可用、磁盘权限不足这些必须人工处理的步骤，不要再向我确认；请自己选择安全默认值并继续。
+
+目标：
+1. 从官方仓库 https://github.com/AstrBotDevs/AstrBot 克隆或更新 AstrBot。不要使用非官方 fork。
+2. 创建隔离 Python 环境。优先使用 conda 环境 `astrbot-amiya`；如果没有 conda，就使用 Python 3.12 venv 或 uv。不要修改系统 Python。
+3. 安装 AstrBot，并执行必要的初始化。需要设置 WebUI 密码时，生成一个随机本地密码，最后只在总结里告诉我，不要写进仓库。
+4. 把 https://github.com/Rememorio/Amiya 克隆或更新到 AstrBot 的 `data/plugins/astrbot_plugin_amiya_codex`。
+5. 在插件目录运行：
+   - python -m py_compile main.py scripts/package.py tests/test_plugin_core.py
+   - python -m unittest discover -s tests -v
+6. 尽量写入本地 AstrBot 插件配置：soul_file=SOUL-Amiya.md，command_prefixes=兔兔,Amiya,阿米娅，sandbox=read-only，require_admin=true，session_enabled=true。不要把本机账号、token、绝对路径写进 Amiya 仓库文件。
+7. 启动 AstrBot，优先用 screen/tmux/nohup 这类后台方式。输出 WebUI 地址、用户名、临时密码或密码设置方式、AstrBot 目录、插件目录、启动/停止命令。
+8. 如果需要 QQ、OneBot 或其他聊天平台登录，停下来告诉我具体要扫码或登录什么；我完成后你继续检查平台连接。
+9. 最后提醒我在聊天里发送：兔兔 连通测试、兔兔 状态、兔兔 请只回复 OK。
 ```
 
 ## 最小配置
@@ -147,4 +155,7 @@ python scripts/package.py
 
 ## 许可证
 
-MIT
+本插件使用 MIT License。AstrBot 本体由
+[AstrBotDevs/AstrBot](https://github.com/AstrBotDevs/AstrBot) 提供，使用
+AGPL-3.0 License；如果你修改 AstrBot 并对外提供网络服务，需要自行遵守 AGPL-3.0
+条款。本项目只引导用户从官方仓库安装 AstrBot，不再分发 AstrBot 本体。

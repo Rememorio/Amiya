@@ -60,21 +60,30 @@ SOUL-Eyjafjalla.md
 
 Restart AstrBot or reload plugins.
 
-## 4. Natural-Language Install With Codex
+## 4. One-Prompt Bootstrap With Codex
 
-If the target machine already has Codex working, let Codex adapt the install to
-that environment:
+If the target machine has Codex but not AstrBot yet, let Codex adapt the
+deployment to that environment. It clones AstrBot from the official repository,
+creates an isolated environment, installs Amiya, and starts AstrBot. It should
+only stop for mandatory human steps such as QQ login, QR scanning, or system
+password prompts.
 
 ```text
-Please install https://github.com/Rememorio/Amiya as an AstrBot plugin.
-Requirements:
-1. First find AstrBot's data/plugins directory. If you cannot find it, ask me.
-2. Clone or update the repository at data/plugins/astrbot_plugin_amiya_codex.
-3. Do not write local accounts, tokens, or absolute machine paths into repository files.
-4. Run python -m py_compile main.py scripts/package.py tests/test_plugin_core.py.
-5. Run python -m unittest discover -s tests -v.
-6. Remind me to configure soul_file, command_prefixes, sandbox, and require_admin in AstrBot WebUI.
-7. If AstrBot is already running, explain that I need to reload plugins or restart AstrBot, but do not stop my service without asking.
+Please deploy AstrBot + Amiya Codex Chat end to end on this machine.
+Do not ask me for confirmation unless you hit QQ/chat-platform login or QR scan, system password/sudo, unavailable network, or insufficient disk permissions. Choose safe defaults and keep going.
+
+Goals:
+1. Clone or update AstrBot from the official repository https://github.com/AstrBotDevs/AstrBot. Do not use unofficial forks.
+2. Create an isolated Python environment. Prefer a conda environment named `astrbot-amiya`; if conda is unavailable, use Python 3.12 venv or uv. Do not modify system Python.
+3. Install AstrBot and run required initialization. If a WebUI password is needed, generate a random local password and report it only in the final summary; do not write it into any repository file.
+4. Clone or update https://github.com/Rememorio/Amiya into AstrBot's `data/plugins/astrbot_plugin_amiya_codex`.
+5. In the plugin directory, run:
+   - python -m py_compile main.py scripts/package.py tests/test_plugin_core.py
+   - python -m unittest discover -s tests -v
+6. If possible, write local AstrBot plugin config: soul_file=SOUL-Amiya.md, command_prefixes=兔兔,Amiya,阿米娅, sandbox=read-only, require_admin=true, session_enabled=true. Do not write local accounts, tokens, or absolute machine paths into the Amiya repository files.
+7. Start AstrBot, preferably in the background with screen/tmux/nohup. Report the WebUI URL, username, temporary password or password setup method, AstrBot directory, plugin directory, and start/stop commands.
+8. If QQ, OneBot, or another chat platform requires login, stop and tell me exactly what I must scan or log into; continue checking the platform connection after I finish.
+9. At the end, remind me to test in chat with: 兔兔 连通测试, 兔兔 状态, 兔兔 请只回复 OK.
 ```
 
 ## 5. Fill Minimal Configuration
@@ -128,6 +137,13 @@ No. The plugin does not handle native slash commands such as `/help` or `/reset`
 
 No. This plugin calls local Codex CLI directly and does not use AstrBot provider
 API key / base URL settings.
+
+### Is Cloning AstrBot From The Official Repository A Legal Problem
+
+Normally no: the instructions tell users to install AstrBot from its official
+repository; this project does not bundle AstrBot in its own release or remove
+AstrBot's license/credit. AstrBot itself is AGPL-3.0. If you modify AstrBot and
+provide it as a network service, you are responsible for complying with AGPL-3.0.
 
 ### Use The Eyjafjalla Persona
 

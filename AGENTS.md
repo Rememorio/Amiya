@@ -32,6 +32,8 @@ standard library unless there is a strong reason to change that.
 Docs should be practical and short. A new user should know exactly:
 
 - what AstrBot must already provide;
+- how to bootstrap AstrBot from the official repository when it is not already
+  installed;
 - how to install the plugin;
 - which WebUI fields to fill first;
 - how to verify the plugin without calling Codex;
@@ -106,6 +108,13 @@ GitHub Release notes should be useful to an installer:
 - verification messages;
 - safety notes;
 - credit to AstrBot.
+- if natural-language install instructions are shown, they must clone AstrBot
+  from `https://github.com/AstrBotDevs/AstrBot`, use an isolated Python
+  environment, avoid writing secrets or machine-specific paths into repository
+  files, and stop only for mandatory human steps such as chat-platform login or
+  system password prompts.
+- include a short license note: AstrBot is AGPL-3.0; this repository does not
+  redistribute AstrBot itself.
 
 Do not use release notes as a raw commit log.
 
