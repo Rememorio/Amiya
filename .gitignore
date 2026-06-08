@@ -1,0 +1,34 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.zip
+
+# Runtime and editor noise
+logs/
+*.log
+tmp/
+.tmp/
+data/
+.amiya-codex-session-state.json
+.amiya-codex-session-state.json.tmp
+.DS_Store

@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "display_name": "Amiya Codex Chat",
+    "short_desc": "通过 AstrBot 调用 Codex CLI，并使用 SOUL 人格文件。",
+    "desc": "一个轻量的 AstrBot 插件：用可配置文本前缀触发 Codex CLI，并通过可配置 SOUL 文件设定人格。"
+  },
+  "config": {
+    "language": {
+      "description": "回复和状态信息语言。",
+      "labels": ["简体中文", "English"]
+    },
+    "codex_binary": {
+      "description": "Codex 可执行文件名或路径。",
+      "hint": "如果 AstrBot 进程可以从 PATH 找到 Codex CLI，保持 codex 即可。"
+    },
+    "workdir": {
+      "description": "Codex 使用的工作目录。",
+      "hint": "留空表示使用 AstrBot 进程目录。建议设置为项目目录或沙箱目录。"
+    },
+    "sandbox": {
+      "description": "Codex 沙箱模式。",
+      "labels": ["只读", "工作区可写", "完全访问"]
+    },
+    "timeout_seconds": {
+      "description": "单次 Codex 请求的最长等待秒数。"
+    },
+    "max_output_chars": {
+      "description": "单条聊天回复的最大字符数。"
+    },
+    "require_admin": {
+      "description": "群聊中仅允许管理员和白名单用户调用 Codex。"
+    },
+    "enable_private": {
+      "description": "允许私聊调用。"
+    },
+    "allow_users": {
+      "description": "始终允许调用 Codex 的发送者 ID，使用逗号分隔。",
+      "hint": "真实 ID 只应保存在本地 AstrBot 配置中，不要提交到公开仓库。"
+    },
+    "model": {
+      "description": "可选 Codex 模型覆盖。",
+      "hint": "留空表示使用 Codex CLI 默认模型。"
+    },
+    "soul_file": {
+      "description": "人格文件路径。",
+      "hint": "相对路径从插件目录解析。内置示例包括 SOUL-Amiya.md 和 SOUL-Eyjafjalla.md。"
+    },
+    "strip_thinking": {
+      "description": "从模型输出中移除常见思考标签。"
+    },
+    "command_prefixes": {
+      "description": "触发插件的普通文本前缀，使用逗号分隔。",
+      "hint": "不会拦截 AstrBot 原生斜杠命令。艾雅法拉示例：艾雅法拉,Eyjafjalla,小羊。"
+    },
+    "log_events": {
+      "description": "写入隐私安全的插件运行日志。",
+      "hint": "日志不包含消息正文、账号 ID、令牌或本机路径。"
+    },
+    "session_enabled": {
+      "description": "使用 Codex 原生会话，并通过 thread id 恢复。"
+    },
+    "session_ttl_minutes": {
+      "description": "原生会话多久未活跃后自动丢弃，单位分钟。"
+    },
+    "session_max_turns": {
+      "description": "单个聊天达到多少轮 Codex 调用后自动重置。"
+    },
+    "session_max_sessions": {
+      "description": "插件最多保留多少个活跃聊天会话。"
+    },
+    "session_persist_state": {
+      "description": "跨 AstrBot 重启保存哈希后的聊天 key 和 Codex thread id。"
+    },
+    "session_cleanup_native_files": {
+      "description": "插件会话过期或重置时，尽量删除匹配的 Codex 原生会话文件。"
+    },
+    "session_state_file": {
+      "description": "可选会话状态文件路径。",
+      "hint": "留空时存储到 AstrBot data/plugin_data 下的插件私有目录。"
+    }
+  }
+}

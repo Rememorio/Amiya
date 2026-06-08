@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "display_name": "Amiya Codex Chat",
+    "short_desc": "Call Codex CLI from AstrBot with a SOUL persona file.",
+    "desc": "A lightweight AstrBot plugin that runs Codex CLI for messages with configurable text prefixes, using a configurable SOUL persona."
+  },
+  "config": {
+    "language": {
+      "description": "Reply and status language.",
+      "labels": ["Simplified Chinese", "English"]
+    },
+    "codex_binary": {
+      "description": "Codex executable name or path.",
+      "hint": "Leave as codex when the AstrBot process can find Codex CLI from PATH."
+    },
+    "workdir": {
+      "description": "Working directory used by Codex.",
+      "hint": "Leave empty to use the AstrBot process directory. Prefer a project or sandbox directory."
+    },
+    "sandbox": {
+      "description": "Codex sandbox mode.",
+      "labels": ["Read only", "Workspace write", "Danger full access"]
+    },
+    "timeout_seconds": {
+      "description": "Maximum seconds to wait for one Codex request."
+    },
+    "max_output_chars": {
+      "description": "Maximum characters in one chat reply."
+    },
+    "require_admin": {
+      "description": "Restrict Codex calls in group chats to admins and allow-listed users."
+    },
+    "enable_private": {
+      "description": "Allow private chat requests."
+    },
+    "allow_users": {
+      "description": "Comma-separated sender IDs that can always call Codex.",
+      "hint": "Keep real IDs in local AstrBot configuration only. Do not commit them."
+    },
+    "model": {
+      "description": "Optional Codex model override.",
+      "hint": "Leave empty to use the Codex CLI default model."
+    },
+    "soul_file": {
+      "description": "Persona file path.",
+      "hint": "Relative paths are resolved from the plugin directory. Bundled examples include SOUL-Amiya.md and SOUL-Eyjafjalla.md."
+    },
+    "strip_thinking": {
+      "description": "Remove common thinking tags from model output."
+    },
+    "command_prefixes": {
+      "description": "Comma-separated plain-text prefixes that trigger the plugin.",
+      "hint": "Native AstrBot slash commands are not intercepted. Eyjafjalla example: 艾雅法拉,Eyjafjalla,小羊."
+    },
+    "log_events": {
+      "description": "Write privacy-safe plugin lifecycle logs.",
+      "hint": "Logs do not include message text, account IDs, tokens, or local paths."
+    },
+    "session_enabled": {
+      "description": "Use Codex native sessions and resume by thread id."
+    },
+    "session_ttl_minutes": {
+      "description": "Drop inactive native sessions after this many minutes."
+    },
+    "session_max_turns": {
+      "description": "Reset a chat session after this many Codex turns."
+    },
+    "session_max_sessions": {
+      "description": "Maximum active chat sessions retained by the plugin."
+    },
+    "session_persist_state": {
+      "description": "Persist hashed chat keys and Codex thread ids across AstrBot restarts."
+    },
+    "session_cleanup_native_files": {
+      "description": "Try to delete matching Codex native session files when plugin sessions expire or reset."
+    },
+    "session_state_file": {
+      "description": "Optional session state file path.",
+      "hint": "Leave empty to store state under AstrBot data/plugin_data for this plugin."
+    }
+  }
+}
