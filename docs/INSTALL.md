@@ -30,6 +30,9 @@ port `6199`. In LLBot, enable OneBot 11 and add a `ws-reverse` connection with U
 `ws://127.0.0.1:6199/ws`. If AstrBot and LLBot are on different machines,
 replace `127.0.0.1` with the AstrBot host.
 
+When using LLBot Desktop, do not install or configure PMHQ manually. PMHQ is an
+internal LLBot component; LLBot Desktop should download, start, and manage it.
+
 ## 2. Prepare Codex CLI
 
 Install and authenticate Codex CLI on the same machine that runs AstrBot. Verify
@@ -88,8 +91,9 @@ Do not ask me for confirmation unless you hit QQ/chat-platform login or QR scan,
 Rules:
 1. Use only the official AstrBot repository: https://github.com/AstrBotDevs/AstrBot. Do not use unofficial forks.
 2. Use LLBot for personal QQ account protocol support: https://luckylillia.com/. On macOS, prefer `LLBot-Desktop-macos-arm64.tar.xz` from GitHub Releases. Do not switch to another QQ protocol implementation unless I explicitly ask.
-3. Use Python 3.12 in an isolated environment. Prefer a conda environment named `astrbot-amiya` when conda is available, and run commands with `conda run -n astrbot-amiya ...` to avoid shell activation issues. If conda is unavailable, use a Python 3.12 venv. Use uv only when it is already installed; do not require uv.
-4. Do not modify system Python. Do not write local accounts, tokens, passwords, or absolute machine paths into repository files.
+3. Do not manually install or configure PMHQ when using LLBot Desktop. PMHQ is an internal LLBot component and LLBot Desktop should download, start, and manage it automatically.
+4. Use Python 3.12 in an isolated environment. Prefer a conda environment named `astrbot-amiya` when conda is available, and run commands with `conda run -n astrbot-amiya ...` to avoid shell activation issues. If conda is unavailable, use a Python 3.12 venv. Use uv only when it is already installed; do not require uv.
+5. Do not modify system Python. Do not write local accounts, tokens, passwords, or absolute machine paths into repository files.
 
 Goals:
 1. Clone or update https://github.com/AstrBotDevs/AstrBot into an AstrBot working directory.

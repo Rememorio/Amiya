@@ -117,10 +117,12 @@ GitHub Release notes should be useful to an installer:
   system password prompts.
 - natural-language install instructions should use LLBot for QQ personal
   accounts, configure AstrBot as the OneBot v11 reverse WebSocket server, and
-  configure LLBot with a `ws-reverse` connection to AstrBot. Use AstrBot source mode with
-  Python 3.12, install dependencies from the official checkout, and start source
-  deployments with `python main.py` unless the package CLI was installed and
-  initialized separately.
+  configure LLBot with a `ws-reverse` connection to AstrBot. Do not instruct
+  users or agents to manually install or configure PMHQ when using LLBot Desktop;
+  LLBot manages PMHQ as an internal component. Use AstrBot source mode with
+  Python 3.12, install dependencies from the official checkout, and start
+  source deployments with `python main.py` unless the package CLI was installed
+  and initialized separately.
 - include a short license note: AstrBot is AGPL-3.0; this repository does not
   redistribute AstrBot itself.
 
