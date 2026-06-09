@@ -72,6 +72,7 @@ metadata.yaml
 _conf_schema.json
 SOUL-Amiya.md
 SOUL-Eyjafjalla.md
+SOUL-Requiem.md
 ```
 
 Restart AstrBot or reload plugins.
@@ -118,7 +119,7 @@ Open the `Amiya Codex Chat` plugin configuration page in AstrBot WebUI.
 
 | Field | Recommendation |
 | --- | --- |
-| `soul_file` | Start with `SOUL-Amiya.md`. |
+| `soul_file` | Start with `SOUL-Amiya.md`. Other bundled options include `SOUL-Eyjafjalla.md` and `SOUL-Requiem.md`. |
 | `command_prefixes` | Start with `兔兔,Amiya,阿米娅`. |
 | `unmatched_policy` | Keep `pass` for AstrBot compatibility. Use `silent` if AstrBot has no provider model. |
 | `sandbox` | Start with `read-only`. |
@@ -190,3 +191,14 @@ command_prefixes=艾雅法拉,Eyjafjalla,小羊
 ```
 
 Save, reload the plugin, and test with `艾雅法拉 状态`.
+
+### Use The Requiem Persona
+
+Set:
+
+```text
+soul_file=SOUL-Requiem.md
+command_prefixes=安魂曲,Requiem
+```
+
+Save, reload the plugin, and test with `安魂曲 状态`.

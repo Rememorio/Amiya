@@ -67,6 +67,7 @@ metadata.yaml
 _conf_schema.json
 SOUL-Amiya.md
 SOUL-Eyjafjalla.md
+SOUL-Requiem.md
 ```
 
 然后重启 AstrBot 或重载插件。
@@ -111,7 +112,7 @@ SOUL-Eyjafjalla.md
 
 | 字段 | 建议 |
 | --- | --- |
-| `soul_file` | 先用 `SOUL-Amiya.md`。 |
+| `soul_file` | 先用 `SOUL-Amiya.md`。其他内置选项包括 `SOUL-Eyjafjalla.md` 和 `SOUL-Requiem.md`。 |
 | `command_prefixes` | 先用 `兔兔,Amiya,阿米娅`。 |
 | `unmatched_policy` | 兼容 AstrBot 时保持 `pass`；没配 provider 模型时用 `silent`。 |
 | `sandbox` | 先用 `read-only`。 |
@@ -178,3 +179,14 @@ command_prefixes=艾雅法拉,Eyjafjalla,小羊
 ```
 
 保存并重载插件后，用 `艾雅法拉 状态` 测试。
+
+### 想换成安魂曲人格
+
+把配置改成：
+
+```text
+soul_file=SOUL-Requiem.md
+command_prefixes=安魂曲,Requiem
+```
+
+保存并重载插件后，用 `安魂曲 状态` 测试。

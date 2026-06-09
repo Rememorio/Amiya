@@ -23,10 +23,11 @@ except ImportError:  # pragma: no cover - only for very old AstrBot builds
 
 
 PLUGIN_ID = "astrbot_plugin_amiya_codex"
-PLUGIN_VERSION = "0.0.3"
+PLUGIN_VERSION = "0.0.4"
 HANDLER_REGEX = r"^(?!\s*/).+"
 DEFAULT_SOUL_FILE = "SOUL.md"
 DEFAULT_PERSONA_TEXT = "你是阿米娅，一个温柔、认真、可靠的中文助手。"
+PERSONA_MESSAGE_PREFIX = "message."
 DEFAULT_TIMEOUT_SECONDS = 120
 DEFAULT_MAX_OUTPUT_CHARS = 3500
 DEFAULT_SESSION_TTL_MINUTES = 360
@@ -92,28 +93,28 @@ CONFIG_DEFAULT = {
 MESSAGES = {
     "zh-CN": {
         "help": (
-            "博士，我可以这样使用：\n"
-            "  兔兔 帮助 - 查看帮助\n"
-            "  兔兔 连通测试 - 检查插件是否在线\n"
-            "  兔兔 状态 - 查看运行状态\n"
-            "  兔兔 人格 - 查看人格文件加载状态\n"
-            "  兔兔 会话状态 - 查看当前会话记忆\n"
-            "  兔兔 新会话 - 清空当前会话记忆\n"
-            "  兔兔 <问题> - 交给 Codex 回答\n\n"
+            "{user_title}，我可以这样使用：\n"
+            "  {help_prefix} 帮助 - 查看帮助\n"
+            "  {help_prefix} 连通测试 - 检查插件是否在线\n"
+            "  {help_prefix} 状态 - 查看运行状态\n"
+            "  {help_prefix} 人格 - 查看人格文件加载状态\n"
+            "  {help_prefix} 会话状态 - 查看当前会话记忆\n"
+            "  {help_prefix} 新会话 - 清空当前会话记忆\n"
+            "  {help_prefix} <问题> - 交给 Codex 回答\n\n"
             "默认情况下，群聊里只有管理员和白名单用户可以调用 Codex。"
         ),
-        "ping": "博士，阿米娅在这里。AstrBot Codex 插件已经加载。",
-        "busy": "博士，我还在处理上一条请求，请稍等一下。",
-        "private_disabled": "博士，当前配置没有开启私聊调用。",
-        "permission_denied": "博士，这个功能目前只开放给管理员或白名单用户使用。",
-        "codex_not_found": "博士，我没有找到 Codex CLI。请确认 codex 已安装并在 PATH 中。",
-        "codex_timeout": "博士，Codex 这次思考超时了。可以把问题拆小一点再试。",
-        "codex_empty": "博士，Codex 没有返回有效内容。",
-        "codex_error": "博士，Codex 返回了错误：{detail}",
-        "codex_failed": "博士，Codex 执行失败了：{detail}",
-        "workdir_missing": "博士，配置的 Codex 工作目录不可用，请检查插件配置。",
-        "session_disabled": "博士，当前没有开启 Codex 原生会话。",
-        "session_reset": "博士，当前 Codex 会话已经重置。",
+        "ping": "{user_title}，{display_name}在这里。AstrBot Codex 插件已经加载。",
+        "busy": "{user_title}，我还在处理上一条请求，请稍等一下。",
+        "private_disabled": "{user_title}，当前配置没有开启私聊调用。",
+        "permission_denied": "{user_title}，这个功能目前只开放给管理员或白名单用户使用。",
+        "codex_not_found": "{user_title}，我没有找到 Codex CLI。请确认 codex 已安装并在 PATH 中。",
+        "codex_timeout": "{user_title}，Codex 这次思考超时了。可以把问题拆小一点再试。",
+        "codex_empty": "{user_title}，Codex 没有返回有效内容。",
+        "codex_error": "{user_title}，Codex 返回了错误：{detail}",
+        "codex_failed": "{user_title}，Codex 执行失败了：{detail}",
+        "workdir_missing": "{user_title}，配置的 Codex 工作目录不可用，请检查插件配置。",
+        "session_disabled": "{user_title}，当前没有开启 Codex 原生会话。",
+        "session_reset": "{user_title}，当前 Codex 会话已经重置。",
         "session_status": (
             "Codex 原生会话：{enabled}\n"
             "当前会话：{current}\n"
@@ -130,7 +131,7 @@ MESSAGES = {
         "truncated": "\n\n... 输出已截断 ...",
         "status": (
             "状态\n"
-            "插件：Amiya Codex Chat v{version}\n"
+            "插件：{display_name} Codex Chat v{version}\n"
             "Codex: {codex_binary}\n"
             "Sandbox: {sandbox}\n"
             "Workdir: {workdir}\n"
@@ -152,16 +153,16 @@ MESSAGES = {
     "en-US": {
         "help": (
             "Available commands:\n"
-            "  Amiya help - show this help\n"
-            "  Amiya ping - check whether the plugin is online\n"
-            "  Amiya status - show runtime status\n"
-            "  Amiya soul - show persona file status\n"
-            "  Amiya session - show current session memory status\n"
-            "  Amiya new - clear current session memory\n"
-            "  Amiya <prompt> - ask Codex\n\n"
+            "  {help_prefix} help - show this help\n"
+            "  {help_prefix} ping - check whether the plugin is online\n"
+            "  {help_prefix} status - show runtime status\n"
+            "  {help_prefix} soul - show persona file status\n"
+            "  {help_prefix} session - show current session memory status\n"
+            "  {help_prefix} new - clear current session memory\n"
+            "  {help_prefix} <prompt> - ask Codex\n\n"
             "By default, group Codex access is limited to admins and allow-listed users."
         ),
-        "ping": "Amiya is online. AstrBot Codex chat is loaded.",
+        "ping": "{display_name} is online. AstrBot Codex chat is loaded.",
         "busy": "I am still working on the previous request. Please wait a moment.",
         "private_disabled": "Private chat access is disabled by configuration.",
         "permission_denied": "Codex access is limited to admins or allow-listed users.",
@@ -189,7 +190,7 @@ MESSAGES = {
         "truncated": "\n\n... output truncated ...",
         "status": (
             "Status\n"
-            "Plugin: Amiya Codex Chat v{version}\n"
+            "Plugin: {display_name} Codex Chat v{version}\n"
             "Codex: {codex_binary}\n"
             "Sandbox: {sandbox}\n"
             "Workdir: {workdir}\n"
@@ -244,6 +245,14 @@ class SessionEntry:
     profile: str = ""
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
+
+
+@dataclass
+class PersonaSettings:
+    display_name: str = ""
+    user_title: str = ""
+    help_prefix: str = ""
+    messages: dict[str, str] = field(default_factory=dict)
 
 
 class AmiyaCodexChat(Star):
@@ -377,8 +386,45 @@ class AmiyaCodexChat(Star):
         return value if value in VALID_LANGUAGES else "zh-CN"
 
     def _t(self, key: str, **kwargs: Any) -> str:
+        template = self._message_template(key)
+        values = self._persona_template_vars()
+        values.update(kwargs)
+        try:
+            return template.format(**values)
+        except (KeyError, IndexError, ValueError):
+            return template
+
+    def _base_t(self, key: str, **kwargs: Any) -> str:
         template = MESSAGES.get(self._language(), MESSAGES["zh-CN"]).get(key, MESSAGES["zh-CN"][key])
         return template.format(**kwargs) if kwargs else template
+
+    def _message_template(self, key: str) -> str:
+        persona = self._persona_settings()
+        if key in persona.messages:
+            return persona.messages[key]
+        return MESSAGES.get(self._language(), MESSAGES["zh-CN"]).get(key, MESSAGES["zh-CN"][key])
+
+    def _persona_defaults(self) -> PersonaSettings:
+        if self._language() == "en-US":
+            return PersonaSettings(display_name="Amiya", user_title="Doctor", help_prefix="Amiya")
+        return PersonaSettings(display_name="阿米娅", user_title="博士", help_prefix="兔兔")
+
+    def _persona_template_vars(self) -> dict[str, str]:
+        defaults = self._persona_defaults()
+        persona = self._persona_settings()
+        return {
+            "display_name": persona.display_name or defaults.display_name,
+            "user_title": persona.user_title or defaults.user_title,
+            "help_prefix": persona.help_prefix or self._primary_command_prefix() or defaults.help_prefix,
+        }
+
+    def _primary_command_prefix(self) -> str:
+        raw = str(self._config_value("command_prefixes", CONFIG_DEFAULT["command_prefixes"]))
+        for item in raw.split(","):
+            prefix = item.strip()
+            if prefix:
+                return prefix
+        return ""
 
     def _config_bool(self, name: str, default: bool) -> bool:
         raw = self._config_value(name, default)
@@ -422,7 +468,7 @@ class AmiyaCodexChat(Star):
         del path
         configured = configured.strip()
         if Path(configured).is_absolute() or configured.startswith("~"):
-            return self._t("absolute_path")
+            return self._base_t("absolute_path")
         return configured
 
     def _soul_candidates(self) -> Iterable[Tuple[Path, str]]:
@@ -442,14 +488,67 @@ class AmiyaCodexChat(Star):
             yield base / DEFAULT_SOUL_FILE, DEFAULT_SOUL_FILE
 
     def _resolve_soul(self) -> Tuple[str, str]:
+        soul, state, _ = self._resolve_soul_with_settings()
+        return soul, state
+
+    def _persona_settings(self) -> PersonaSettings:
+        _, _, settings = self._resolve_soul_with_settings()
+        return settings
+
+    def _resolve_soul_with_settings(self) -> Tuple[str, str, PersonaSettings]:
         for path, label in self._soul_candidates():
             try:
-                content = path.read_text(encoding="utf-8").strip()
+                content = path.read_text(encoding="utf-8")
             except OSError:
                 continue
-            if content:
-                return content, self._t("loaded", path=label)
-        return DEFAULT_PERSONA_TEXT, self._t("missing")
+            soul, settings = self._parse_soul_document(content)
+            if soul:
+                return soul, self._base_t("loaded", path=label), settings
+        return DEFAULT_PERSONA_TEXT, self._base_t("missing"), PersonaSettings()
+
+    def _parse_soul_document(self, content: str) -> Tuple[str, PersonaSettings]:
+        text = content.lstrip("\ufeff")
+        lines = text.splitlines()
+        if not lines or lines[0].strip() != "---":
+            return text.strip(), PersonaSettings()
+
+        metadata_lines: list[str] = []
+        for index, line in enumerate(lines[1:], start=1):
+            if line.strip() == "---":
+                body = "\n".join(lines[index + 1 :]).strip()
+                return body, self._parse_persona_metadata(metadata_lines)
+            metadata_lines.append(line)
+
+        return text.strip(), PersonaSettings()
+
+    def _parse_persona_metadata(self, lines: list[str]) -> PersonaSettings:
+        settings = PersonaSettings()
+        for raw_line in lines:
+            line = raw_line.strip()
+            if not line or line.startswith("#") or ":" not in line:
+                continue
+            key, raw_value = line.split(":", 1)
+            key = key.strip()
+            value = self._unquote_metadata_value(raw_value.strip())
+            if not key or not value:
+                continue
+            if key == "display_name":
+                settings.display_name = value
+            elif key == "user_title":
+                settings.user_title = value
+            elif key == "help_prefix":
+                settings.help_prefix = value
+            elif key.startswith(PERSONA_MESSAGE_PREFIX):
+                message_key = key[len(PERSONA_MESSAGE_PREFIX) :].strip()
+                if message_key:
+                    settings.messages[message_key] = value
+        return settings
+
+    @staticmethod
+    def _unquote_metadata_value(value: str) -> str:
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+            value = value[1:-1]
+        return value.replace("\\n", "\n").strip()
 
     def _runtime_instructions(self) -> str:
         if self._language() == "en-US":

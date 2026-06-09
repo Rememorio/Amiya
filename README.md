@@ -91,7 +91,7 @@ Open this plugin's configuration page in AstrBot WebUI. Start with these fields:
 
 | Field | Recommended value | Notes |
 | --- | --- | --- |
-| `soul_file` | `SOUL-Amiya.md` | Use `SOUL-Eyjafjalla.md` for the Eyjafjalla persona. |
+| `soul_file` | `SOUL-Amiya.md` | Bundled personas include `SOUL-Amiya.md`, `SOUL-Eyjafjalla.md`, and `SOUL-Requiem.md`. |
 | `command_prefixes` | `兔兔,Amiya,阿米娅` | Text prefixes that trigger the plugin; @ this bot also triggers it. Eyjafjalla example: `艾雅法拉,Eyjafjalla,小羊`. |
 | `unmatched_policy` | `pass` | `pass` keeps AstrBot compatibility. Use `silent` when AstrBot has no provider, or `codex` to let Codex handle all non-slash plain text. |
 | `workdir` | empty | Empty means the AstrBot process directory. Set a project directory only when Codex should see it. |
@@ -149,6 +149,26 @@ soul_file=SOUL-Eyjafjalla.md
 command_prefixes=艾雅法拉,Eyjafjalla,小羊
 sandbox=read-only
 require_admin=true
+```
+
+Requiem persona:
+
+```text
+soul_file=SOUL-Requiem.md
+command_prefixes=安魂曲,Requiem
+sandbox=read-only
+require_admin=true
+```
+
+SOUL files can start with optional front matter to customize built-in replies:
+
+```text
+---
+display_name: 安魂曲
+user_title: 老板
+help_prefix: 安魂曲
+message.permission_denied: 老板，这份委托……安魂曲还不能接。
+---
 ```
 
 Controlled project assistant:

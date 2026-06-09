@@ -7,7 +7,7 @@
 
 | 字段 | 默认值 | 什么时候改 |
 | --- | --- | --- |
-| `soul_file` | `SOUL-Amiya.md` | 切换人格时改。仓库内置 `SOUL-Amiya.md` 和 `SOUL-Eyjafjalla.md`。 |
+| `soul_file` | `SOUL-Amiya.md` | 切换人格时改。仓库内置 `SOUL-Amiya.md`、`SOUL-Eyjafjalla.md` 和 `SOUL-Requiem.md`。 |
 | `command_prefixes` | `兔兔,Amiya,阿米娅` | 想换触发词时改。多个前缀用英文逗号分隔；@ 本 bot 也会触发。 |
 | `unmatched_policy` | `pass` | AstrBot 没配 provider 模型时用 `silent`；只有想让 Codex 接管所有非斜杠普通文本时才用 `codex`。 |
 | `workdir` | 空 | 想让 Codex 在某个项目里回答或改文件时填项目目录。 |
@@ -37,6 +37,15 @@ session_enabled=true
 ```text
 soul_file=SOUL-Eyjafjalla.md
 command_prefixes=艾雅法拉,Eyjafjalla,小羊
+sandbox=read-only
+require_admin=true
+```
+
+### 安魂曲人格
+
+```text
+soul_file=SOUL-Requiem.md
+command_prefixes=安魂曲,Requiem
 sandbox=read-only
 require_admin=true
 ```
@@ -74,7 +83,7 @@ sandbox=workspace-write
 | `enable_private` | `ASTRBOT_AMIYA_CODEX_ENABLE_PRIVATE`, `AMIYA_CODEX_ENABLE_DIRECT` | `true` | 是否允许私聊调用。 |
 | `allow_users` | `ASTRBOT_AMIYA_CODEX_ALLOW_USERS`, `AMIYA_CODEX_ALLOW_USERS` | 空 | 始终允许调用 Codex 的发送者 ID。 |
 | `model` | `ASTRBOT_AMIYA_CODEX_MODEL`, `AMIYA_CODEX_MODEL` | 空 | 可选 Codex 模型覆盖。留空使用 Codex CLI 默认模型。 |
-| `soul_file` | `ASTRBOT_AMIYA_CODEX_SOUL_FILE`, `AMIYA_CODEX_SOUL_FILE` | `SOUL-Amiya.md` | 人格文件。相对路径从插件目录解析。 |
+| `soul_file` | `ASTRBOT_AMIYA_CODEX_SOUL_FILE`, `AMIYA_CODEX_SOUL_FILE` | `SOUL-Amiya.md` | 人格文件。相对路径从插件目录解析。可选 front matter 可自定义内置回复。 |
 | `strip_thinking` | `ASTRBOT_AMIYA_CODEX_STRIP_THINKING`, `AMIYA_CODEX_STRIP_THINKING` | `true` | 回复前移除常见思考标签。 |
 | `command_prefixes` | `ASTRBOT_AMIYA_CODEX_COMMAND_PREFIXES`, `AMIYA_CODEX_COMMAND_PREFIXES` | `兔兔,Amiya,阿米娅` | 触发插件的普通文本前缀；@ 本 bot 也会触发。 |
 | `unmatched_policy` | `ASTRBOT_AMIYA_CODEX_UNMATCHED_POLICY`, `AMIYA_CODEX_UNMATCHED_POLICY` | `pass` | 未命中前缀的非斜杠普通文本如何处理：`pass`、`silent` 或 `codex`。 |
@@ -116,6 +125,22 @@ sandbox=workspace-write
 ## 人格文件
 
 `soul_file` 会按 UTF-8 文本读取。相对路径从插件目录解析。
+
+SOUL 文件可以用可选 front matter 配置插件自身的称呼和内置回复。front matter
+不会发送给 Codex，只影响插件本地回复。
+
+```text
+---
+display_name: 安魂曲
+user_title: 老板
+help_prefix: 安魂曲
+message.permission_denied: 老板，这份委托……安魂曲还不能接。
+---
+```
+
+支持的键包括 `display_name`、`user_title`、`help_prefix` 和
+`message.<message_key>`。`message.*` 可覆盖内置回复，例如
+`permission_denied`、`ping`、`busy`、`codex_timeout`、`session_reset`。
 
 加载顺序：
 

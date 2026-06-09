@@ -8,7 +8,7 @@ allow-lists in service deployments.
 
 | Field | Default | When to change it |
 | --- | --- | --- |
-| `soul_file` | `SOUL-Amiya.md` | Change when switching persona. Bundled options: `SOUL-Amiya.md`, `SOUL-Eyjafjalla.md`. |
+| `soul_file` | `SOUL-Amiya.md` | Change when switching persona. Bundled options: `SOUL-Amiya.md`, `SOUL-Eyjafjalla.md`, `SOUL-Requiem.md`. |
 | `command_prefixes` | `兔兔,Amiya,阿米娅` | Change when you want different trigger names. Use commas. @ this bot also triggers the plugin. |
 | `unmatched_policy` | `pass` | Use `silent` when AstrBot has no provider model. Use `codex` only when Codex should handle all non-slash plain text. |
 | `workdir` | empty | Set a project directory when Codex should inspect or edit that project. |
@@ -38,6 +38,15 @@ session_enabled=true
 ```text
 soul_file=SOUL-Eyjafjalla.md
 command_prefixes=艾雅法拉,Eyjafjalla,小羊
+sandbox=read-only
+require_admin=true
+```
+
+### Requiem Persona
+
+```text
+soul_file=SOUL-Requiem.md
+command_prefixes=安魂曲,Requiem
 sandbox=read-only
 require_admin=true
 ```
@@ -76,7 +85,7 @@ Avoid `danger-full-access` in group chats.
 | `enable_private` | `ASTRBOT_AMIYA_CODEX_ENABLE_PRIVATE`, `AMIYA_CODEX_ENABLE_DIRECT` | `true` | Allow private-chat access. |
 | `allow_users` | `ASTRBOT_AMIYA_CODEX_ALLOW_USERS`, `AMIYA_CODEX_ALLOW_USERS` | empty | Sender IDs that can always call Codex. |
 | `model` | `ASTRBOT_AMIYA_CODEX_MODEL`, `AMIYA_CODEX_MODEL` | empty | Optional Codex model override. Empty uses the Codex CLI default. |
-| `soul_file` | `ASTRBOT_AMIYA_CODEX_SOUL_FILE`, `AMIYA_CODEX_SOUL_FILE` | `SOUL-Amiya.md` | Persona file. Relative paths resolve from the plugin directory. |
+| `soul_file` | `ASTRBOT_AMIYA_CODEX_SOUL_FILE`, `AMIYA_CODEX_SOUL_FILE` | `SOUL-Amiya.md` | Persona file. Relative paths resolve from the plugin directory. Optional front matter can customize built-in replies. |
 | `strip_thinking` | `ASTRBOT_AMIYA_CODEX_STRIP_THINKING`, `AMIYA_CODEX_STRIP_THINKING` | `true` | Remove common thinking tags before replying. |
 | `command_prefixes` | `ASTRBOT_AMIYA_CODEX_COMMAND_PREFIXES`, `AMIYA_CODEX_COMMAND_PREFIXES` | `兔兔,Amiya,阿米娅` | Plain text prefixes that trigger the plugin. @ this bot also triggers it. |
 | `unmatched_policy` | `ASTRBOT_AMIYA_CODEX_UNMATCHED_POLICY`, `AMIYA_CODEX_UNMATCHED_POLICY` | `pass` | What to do with non-slash plain text that does not match a prefix: `pass`, `silent`, or `codex`. |
@@ -122,6 +131,23 @@ this bot.
 
 `soul_file` is read as UTF-8 text. Relative paths resolve from the plugin
 directory.
+
+SOUL files can start with optional front matter. The front matter is not sent to
+Codex; it only customizes plugin-owned labels and built-in replies.
+
+```text
+---
+display_name: 安魂曲
+user_title: 老板
+help_prefix: 安魂曲
+message.permission_denied: 老板，这份委托……安魂曲还不能接。
+---
+```
+
+Supported front matter keys are `display_name`, `user_title`, `help_prefix`, and
+`message.<message_key>`. Message overrides use the same keys as built-in
+responses, such as `permission_denied`, `ping`, `busy`, `codex_timeout`, and
+`session_reset`.
 
 Loading order:
 
