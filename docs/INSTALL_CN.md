@@ -141,7 +141,7 @@ SOUL-Eyjafjalla.md
 
 1. AstrBot 日志里是否加载了 `astrbot_plugin_amiya_codex`。
 2. 平台适配器是否已经连接。
-3. 发送消息是否以 `command_prefixes` 中的前缀开头。
+3. 发送消息是否以 `command_prefixes` 中的前缀开头，或在 AstrBot 消息链里 @ 本 bot。
 
 ### 无前缀消息触发 AstrBot provider 报错
 

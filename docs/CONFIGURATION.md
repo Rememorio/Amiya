@@ -9,7 +9,7 @@ allow-lists in service deployments.
 | Field | Default | When to change it |
 | --- | --- | --- |
 | `soul_file` | `SOUL-Amiya.md` | Change when switching persona. Bundled options: `SOUL-Amiya.md`, `SOUL-Eyjafjalla.md`. |
-| `command_prefixes` | `兔兔,Amiya,阿米娅` | Change when you want different trigger names. Use commas. |
+| `command_prefixes` | `兔兔,Amiya,阿米娅` | Change when you want different trigger names. Use commas. @ this bot also triggers the plugin. |
 | `unmatched_policy` | `pass` | Use `silent` when AstrBot has no provider model. Use `codex` only when Codex should handle all non-slash plain text. |
 | `workdir` | empty | Set a project directory when Codex should inspect or edit that project. |
 | `sandbox` | `read-only` | Change to `workspace-write` only when file edits are needed. |
@@ -78,7 +78,7 @@ Avoid `danger-full-access` in group chats.
 | `model` | `ASTRBOT_AMIYA_CODEX_MODEL`, `AMIYA_CODEX_MODEL` | empty | Optional Codex model override. Empty uses the Codex CLI default. |
 | `soul_file` | `ASTRBOT_AMIYA_CODEX_SOUL_FILE`, `AMIYA_CODEX_SOUL_FILE` | `SOUL-Amiya.md` | Persona file. Relative paths resolve from the plugin directory. |
 | `strip_thinking` | `ASTRBOT_AMIYA_CODEX_STRIP_THINKING`, `AMIYA_CODEX_STRIP_THINKING` | `true` | Remove common thinking tags before replying. |
-| `command_prefixes` | `ASTRBOT_AMIYA_CODEX_COMMAND_PREFIXES`, `AMIYA_CODEX_COMMAND_PREFIXES` | `兔兔,Amiya,阿米娅` | Plain text prefixes that trigger the plugin. |
+| `command_prefixes` | `ASTRBOT_AMIYA_CODEX_COMMAND_PREFIXES`, `AMIYA_CODEX_COMMAND_PREFIXES` | `兔兔,Amiya,阿米娅` | Plain text prefixes that trigger the plugin. @ this bot also triggers it. |
 | `unmatched_policy` | `ASTRBOT_AMIYA_CODEX_UNMATCHED_POLICY`, `AMIYA_CODEX_UNMATCHED_POLICY` | `pass` | What to do with non-slash plain text that does not match a prefix: `pass`, `silent`, or `codex`. |
 | `log_events` | `ASTRBOT_AMIYA_CODEX_LOG_EVENTS`, `AMIYA_CODEX_LOG_EVENTS` | `true` | Log privacy-safe events without message text, group IDs, or user IDs. |
 | `session_enabled` | `ASTRBOT_AMIYA_CODEX_SESSION_ENABLED`, `AMIYA_CODEX_SESSION_ENABLED` | `true` | Use Codex native sessions. When disabled, calls use `--ephemeral`. |
@@ -92,8 +92,9 @@ Avoid `danger-full-access` in group chats.
 ## Commands And Prefixes
 
 The plugin never intercepts AstrBot native slash commands such as `/help` or
-`/reset`. Non-slash messages that do not match `command_prefixes` follow
-`unmatched_policy`:
+`/reset`. Non-slash messages that mention this bot anywhere in the AstrBot
+message chain are treated like configured-prefix messages. Other non-slash
+messages that do not match `command_prefixes` follow `unmatched_policy`:
 
 | Value | Behavior |
 | --- | --- |
@@ -110,10 +111,12 @@ The plugin never intercepts AstrBot native slash commands such as `/help` or
 | `兔兔 会话状态` or `兔兔 session` | Show current session status. |
 | `兔兔 新会话` or `兔兔 reset` | Clear the current chat session. |
 | `兔兔 <prompt>` | Call Codex. |
+| `@Amiya <prompt>` | Call Codex when the platform delivers an AstrBot mention for this bot. |
 
 Chinese prefixes may be attached directly to the prompt, such as `兔兔状态`.
 ASCII prefixes are case-insensitive, but `AmiyaBot` is not treated as the
-`Amiya` prefix.
+`Amiya` prefix. `@all` and mentions of other users do not count as mentioning
+this bot.
 
 ## Persona Files
 

@@ -1,7 +1,7 @@
 name: astrbot_plugin_amiya_codex
 display_name: Amiya Codex Chat
 author: rememorio
-version: 0.0.2
+version: 0.0.3
 repo: https://github.com/rememorio/Amiya
 desc: Chat with Codex CLI from AstrBot using a configurable SOUL persona.
 short_desc: AstrBot bridge for Codex CLI with SOUL persona support.

@@ -91,7 +91,7 @@ Open this plugin's configuration page in AstrBot WebUI. Start with these fields:
 | Field | Recommended value | Notes |
 | --- | --- | --- |
 | `soul_file` | `SOUL-Amiya.md` | Use `SOUL-Eyjafjalla.md` for the Eyjafjalla persona. |
-| `command_prefixes` | `兔兔,Amiya,阿米娅` | Text prefixes that trigger the plugin. Eyjafjalla example: `艾雅法拉,Eyjafjalla,小羊`. |
+| `command_prefixes` | `兔兔,Amiya,阿米娅` | Text prefixes that trigger the plugin; @ this bot also triggers it. Eyjafjalla example: `艾雅法拉,Eyjafjalla,小羊`. |
 | `unmatched_policy` | `pass` | `pass` keeps AstrBot compatibility. Use `silent` when AstrBot has no provider, or `codex` to let Codex handle all non-slash plain text. |
 | `workdir` | empty | Empty means the AstrBot process directory. Set a project directory only when Codex should see it. |
 | `sandbox` | `read-only` | Keep read-only until the chat path is confirmed. |
@@ -119,12 +119,14 @@ The first two commands do not call Codex. The third command runs Codex CLI.
 | `兔兔 会话状态` | Show current Codex session status for this chat. |
 | `兔兔 新会话` | Reset the Codex session for this chat. |
 | `兔兔 <prompt>` | Send the prompt to Codex. |
+| `@Amiya <prompt>` | Send the prompt to Codex when the platform delivers an AstrBot mention for this bot. |
 
 The plugin never intercepts AstrBot's native slash commands such as `/help` or
-`/reset`. Non-slash messages that do not match `command_prefixes` follow
-`unmatched_policy`: `pass` sends them back to AstrBot, `silent` stops them
-without a reply, and `codex` sends them to Codex while still respecting
-`require_admin`, `allow_users`, and `enable_private`.
+`/reset`. A message that mentions this bot anywhere in the AstrBot message chain
+is treated like a configured prefix. Other non-slash messages that do not match
+`command_prefixes` follow `unmatched_policy`: `pass` sends them back to AstrBot,
+`silent` stops them without a reply, and `codex` sends them to Codex while still
+respecting `require_admin`, `allow_users`, and `enable_private`.
 
 ## Configuration Recipes
 
