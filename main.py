@@ -23,7 +23,7 @@ except ImportError:  # pragma: no cover - only for very old AstrBot builds
 
 
 PLUGIN_ID = "astrbot_plugin_amiya_codex"
-PLUGIN_VERSION = "0.0.4"
+PLUGIN_VERSION = "0.0.5"
 HANDLER_REGEX = r"^(?!\s*/).+"
 DEFAULT_SOUL_FILE = "SOUL.md"
 DEFAULT_PERSONA_TEXT = "你是阿米娅，一个温柔、认真、可靠的中文助手。"
