@@ -380,6 +380,20 @@ class PluginCoreTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertIn("艾雅法拉", soul)
         self.assertIn("SOUL-Eyjafjalla.md", state)
+        self.assertIn("艾雅法拉 帮助", plugin._t("help"))
+        self.assertEqual(plugin._t("permission_denied"), "前辈，这项功能目前只开放给管理员或白名单用户使用。")
+        self.assertIn("插件：艾雅法拉 Codex Chat v", plugin._status_text())
+
+    def test_soul_file_can_select_amiya_and_customize_replies(self) -> None:
+        plugin = self._plugin({"soul_file": "SOUL-Amiya.md", "command_prefixes": "兔兔,Amiya,阿米娅"})
+        soul, state = plugin._resolve_soul()
+
+        self.assertIn("阿米娅", soul)
+        self.assertNotIn("message.permission_denied", soul)
+        self.assertIn("SOUL-Amiya.md", state)
+        self.assertIn("兔兔 帮助", plugin._t("help"))
+        self.assertEqual(plugin._t("permission_denied"), "博士，这项功能目前只开放给管理员或白名单用户使用。")
+        self.assertIn("插件：阿米娅 Codex Chat v", plugin._status_text())
 
     def test_soul_file_can_select_requiem_and_customize_replies(self) -> None:
         plugin = self._plugin({"soul_file": "SOUL-Requiem.md", "command_prefixes": "安魂曲,Requiem"})
@@ -390,7 +404,7 @@ class PluginCoreTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("message.permission_denied", soul)
         self.assertIn("SOUL-Requiem.md", state)
         self.assertIn("安魂曲 帮助", plugin._t("help"))
-        self.assertEqual(plugin._t("permission_denied"), "老板，这份委托……安魂曲还不能接。")
+        self.assertEqual(plugin._t("permission_denied"), "鉴定师，这份委托……安魂曲现在还不能接。")
         self.assertIn("插件：安魂曲 Codex Chat v", plugin._status_text())
 
     def test_soul_front_matter_can_customize_builtin_replies(self) -> None:

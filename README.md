@@ -165,9 +165,9 @@ SOUL files can start with optional front matter to customize built-in replies:
 ```text
 ---
 display_name: 安魂曲
-user_title: 老板
+user_title: 鉴定师
 help_prefix: 安魂曲
-message.permission_denied: 老板，这份委托……安魂曲还不能接。
+message.permission_denied: 鉴定师，这份委托……安魂曲现在还不能接。
 ---
 ```
 
