@@ -69,13 +69,13 @@
     "default": true
   },
   "command_prefixes": {
-    "description": "Comma-separated plain-text prefixes that trigger the plugin.",
+    "description": "Comma-separated plain-text prefixes that trigger the plugin. Mentioning the bot also triggers it.",
     "type": "string",
     "hint": "Native AstrBot slash commands are not intercepted. Example for Eyjafjalla: 艾雅法拉,Eyjafjalla,小羊.",
     "default": "兔兔,Amiya,阿米娅"
   },
   "unmatched_policy": {
-    "description": "How to handle non-slash plain text messages that do not match command_prefixes.",
+    "description": "How to handle non-slash plain text messages that do not match command_prefixes or mention the bot.",
     "type": "string",
     "options": ["pass", "silent", "codex"],
     "labels": ["Pass to AstrBot", "Stop silently", "Send to Codex"],

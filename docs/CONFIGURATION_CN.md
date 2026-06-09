@@ -8,7 +8,7 @@
 | 字段 | 默认值 | 什么时候改 |
 | --- | --- | --- |
 | `soul_file` | `SOUL-Amiya.md` | 切换人格时改。仓库内置 `SOUL-Amiya.md` 和 `SOUL-Eyjafjalla.md`。 |
-| `command_prefixes` | `兔兔,Amiya,阿米娅` | 想换触发词时改。多个前缀用英文逗号分隔。 |
+| `command_prefixes` | `兔兔,Amiya,阿米娅` | 想换触发词时改。多个前缀用英文逗号分隔；@ 本 bot 也会触发。 |
 | `unmatched_policy` | `pass` | AstrBot 没配 provider 模型时用 `silent`；只有想让 Codex 接管所有非斜杠普通文本时才用 `codex`。 |
 | `workdir` | 空 | 想让 Codex 在某个项目里回答或改文件时填项目目录。 |
 | `sandbox` | `read-only` | 需要写文件时才改成 `workspace-write`。 |
@@ -76,7 +76,7 @@ sandbox=workspace-write
 | `model` | `ASTRBOT_AMIYA_CODEX_MODEL`, `AMIYA_CODEX_MODEL` | 空 | 可选 Codex 模型覆盖。留空使用 Codex CLI 默认模型。 |
 | `soul_file` | `ASTRBOT_AMIYA_CODEX_SOUL_FILE`, `AMIYA_CODEX_SOUL_FILE` | `SOUL-Amiya.md` | 人格文件。相对路径从插件目录解析。 |
 | `strip_thinking` | `ASTRBOT_AMIYA_CODEX_STRIP_THINKING`, `AMIYA_CODEX_STRIP_THINKING` | `true` | 回复前移除常见思考标签。 |
-| `command_prefixes` | `ASTRBOT_AMIYA_CODEX_COMMAND_PREFIXES`, `AMIYA_CODEX_COMMAND_PREFIXES` | `兔兔,Amiya,阿米娅` | 触发插件的普通文本前缀。 |
+| `command_prefixes` | `ASTRBOT_AMIYA_CODEX_COMMAND_PREFIXES`, `AMIYA_CODEX_COMMAND_PREFIXES` | `兔兔,Amiya,阿米娅` | 触发插件的普通文本前缀；@ 本 bot 也会触发。 |
 | `unmatched_policy` | `ASTRBOT_AMIYA_CODEX_UNMATCHED_POLICY`, `AMIYA_CODEX_UNMATCHED_POLICY` | `pass` | 未命中前缀的非斜杠普通文本如何处理：`pass`、`silent` 或 `codex`。 |
 | `log_events` | `ASTRBOT_AMIYA_CODEX_LOG_EVENTS`, `AMIYA_CODEX_LOG_EVENTS` | `true` | 记录隐私安全的插件事件，不包含消息正文、群号或用户号。 |
 | `session_enabled` | `ASTRBOT_AMIYA_CODEX_SESSION_ENABLED`, `AMIYA_CODEX_SESSION_ENABLED` | `true` | 使用 Codex 原生 session。关闭后使用 `--ephemeral`。 |
@@ -90,7 +90,8 @@ sandbox=workspace-write
 ## 命令和前缀
 
 插件永远不会拦截 `/help`、`/reset` 等 AstrBot 原生斜杠命令。未命中
-`command_prefixes` 的非斜杠普通文本由 `unmatched_policy` 决定：
+`command_prefixes` 但在 AstrBot 消息链里 @ 本 bot 的非斜杠消息，会像前缀消息
+一样触发。其他非斜杠普通文本由 `unmatched_policy` 决定：
 
 | 值 | 行为 |
 | --- | --- |
@@ -107,9 +108,10 @@ sandbox=workspace-write
 | `兔兔 会话状态` 或 `兔兔 session` | 查看当前聊天的会话状态。 |
 | `兔兔 新会话` 或 `兔兔 reset` | 清空当前聊天会话。 |
 | `兔兔 <问题>` | 调用 Codex。 |
+| `@阿米娅 <问题>` | 聊天平台把 @ 本 bot 传给 AstrBot 时调用 Codex。 |
 
 中文前缀可以直接连正文，例如 `兔兔状态`。ASCII 前缀大小写不敏感，但不会把
-`AmiyaBot` 误判成 `Amiya`。
+`AmiyaBot` 误判成 `Amiya`。`@全体成员` 和 @ 其他用户不会当成 @ 本 bot。
 
 ## 人格文件
 

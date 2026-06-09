@@ -69,12 +69,16 @@ class _FakeEvent:
         private: bool = False,
         admin: bool = False,
         sender_id: str = "10000",
+        self_id: str = "20000",
+        messages: list[object] | None = None,
     ) -> None:
         self._sender_name = sender_name
         self.message_str = message_str
         self._private = private
         self._admin = admin
         self._sender_id = sender_id
+        self._self_id = self_id
+        self._messages = messages or []
         self.stopped = False
 
     def get_message_str(self) -> str:
@@ -92,6 +96,12 @@ class _FakeEvent:
     def get_sender_id(self) -> str:
         return self._sender_id
 
+    def get_self_id(self) -> str:
+        return self._self_id
+
+    def get_messages(self) -> list[object]:
+        return self._messages
+
     def get_platform_id(self) -> str:
         return "test-platform"
 
@@ -106,6 +116,20 @@ class _FakeEvent:
 
     def plain_result(self, text: str) -> str:
         return text
+
+
+class _FakeAt:
+    type = "At"
+
+    def __init__(self, qq: str) -> None:
+        self.qq = qq
+
+
+class _FakePlain:
+    type = "Plain"
+
+    def __init__(self, text: str) -> None:
+        self.text = text
 
 
 class PluginCoreTests(unittest.IsolatedAsyncioTestCase):
@@ -227,6 +251,116 @@ class PluginCoreTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertTrue(event.stopped)
         self.assertEqual(results, [plugin._t("permission_denied")])
+
+    async def test_mention_self_routes_to_codex_without_prefix(self) -> None:
+        plugin = self._plugin(
+            {
+                "command_prefixes": "兔兔",
+                "unmatched_policy": "pass",
+                "require_admin": False,
+                "session_enabled": False,
+            }
+        )
+        event = _FakeEvent(
+            message_str="我看看直接 @ 有没有用",
+            self_id="20000",
+            messages=[_FakeAt("20000"), _FakePlain("我看看直接 @ 有没有用")],
+        )
+        seen = {}
+
+        async def fake_run_codex(event_arg, text, session):
+            seen["event"] = event_arg
+            seen["text"] = text
+            seen["session"] = session
+            return "mention reply", True, None
+
+        plugin._run_codex = fake_run_codex
+
+        results = []
+        async for result in plugin.on_prefixed_message(event):
+            results.append(result)
+
+        self.assertTrue(event.stopped)
+        self.assertEqual(results, ["mention reply"])
+        self.assertIs(seen["event"], event)
+        self.assertEqual(seen["text"], "我看看直接 @ 有没有用")
+        self.assertIsNone(seen["session"])
+
+    async def test_mention_self_runs_plugin_commands_without_prefix(self) -> None:
+        plugin = self._plugin(
+            {
+                "command_prefixes": "兔兔",
+                "require_admin": False,
+                "session_enabled": False,
+            }
+        )
+        event = _FakeEvent(message_str="状态", self_id="20000", messages=[_FakeAt("20000"), _FakePlain("状态")])
+
+        results = []
+        async for result in plugin.on_prefixed_message(event):
+            results.append(result)
+
+        self.assertTrue(event.stopped)
+        self.assertEqual(len(results), 1)
+        self.assertIn("Amiya Codex Chat v", results[0])
+
+    async def test_middle_mention_self_routes_when_other_bot_is_first(self) -> None:
+        plugin = self._plugin(
+            {
+                "command_prefixes": "兔兔",
+                "unmatched_policy": "pass",
+                "require_admin": False,
+                "session_enabled": False,
+            }
+        )
+        event = _FakeEvent(
+            message_str="@Other(30000) 你好",
+            self_id="20000",
+            messages=[_FakeAt("30000"), _FakeAt("20000"), _FakePlain("你好")],
+        )
+
+        async def fake_run_codex(event_arg, text, session):
+            del event_arg, session
+            return f"codex saw: {text}", True, None
+
+        plugin._run_codex = fake_run_codex
+
+        results = []
+        async for result in plugin.on_prefixed_message(event):
+            results.append(result)
+
+        self.assertTrue(event.stopped)
+        self.assertEqual(results, ["codex saw: @Other(30000) 你好"])
+
+    async def test_other_mentions_do_not_trigger_when_policy_passes(self) -> None:
+        plugin = self._plugin({"command_prefixes": "兔兔", "unmatched_policy": "pass"})
+        event = _FakeEvent(
+            message_str="你好",
+            self_id="20000",
+            messages=[_FakeAt("30000"), _FakePlain("你好")],
+        )
+
+        results = []
+        async for result in plugin.on_prefixed_message(event):
+            results.append(result)
+
+        self.assertFalse(event.stopped)
+        self.assertEqual(results, [])
+
+    async def test_at_all_does_not_trigger_as_self_mention(self) -> None:
+        plugin = self._plugin({"command_prefixes": "兔兔", "unmatched_policy": "pass"})
+        event = _FakeEvent(
+            message_str="大家看一下",
+            self_id="20000",
+            messages=[_FakeAt("all"), _FakePlain("大家看一下")],
+        )
+
+        results = []
+        async for result in plugin.on_prefixed_message(event):
+            results.append(result)
+
+        self.assertFalse(event.stopped)
+        self.assertEqual(results, [])
 
     def test_soul_file_can_select_eyjafjalla(self) -> None:
         plugin = self._plugin({"soul_file": "SOUL-Eyjafjalla.md"})

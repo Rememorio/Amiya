@@ -150,7 +150,8 @@ Check:
 
 1. AstrBot logs show `astrbot_plugin_amiya_codex` loaded.
 2. The platform adapter is connected.
-3. The message starts with one configured `command_prefixes` value.
+3. The message starts with one configured `command_prefixes` value or mentions
+   this bot in the AstrBot message chain.
 
 ### Non-Prefixed Messages Trigger AstrBot Provider Errors
 

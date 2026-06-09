@@ -23,7 +23,7 @@ except ImportError:  # pragma: no cover - only for very old AstrBot builds
 
 
 PLUGIN_ID = "astrbot_plugin_amiya_codex"
-PLUGIN_VERSION = "0.0.2"
+PLUGIN_VERSION = "0.0.3"
 HANDLER_REGEX = r"^(?!\s*/).+"
 DEFAULT_SOUL_FILE = "SOUL.md"
 DEFAULT_PERSONA_TEXT = "你是阿米娅，一个温柔、认真、可靠的中文助手。"
@@ -269,7 +269,11 @@ class AmiyaCodexChat(Star):
         """Handle Amiya Codex prefixed messages."""
         raw_text = self._event_text(event)
         text, prefix_matched = self._strip_known_prefix(raw_text)
+        mention_matched = False
         if not prefix_matched:
+            mention_matched = self._mentioned_self(event)
+        trigger_matched = prefix_matched or mention_matched
+        if not trigger_matched:
             policy = self._unmatched_policy()
             if policy == "pass":
                 return
@@ -279,13 +283,13 @@ class AmiyaCodexChat(Star):
                 return
             text = raw_text.strip()
 
-        command = self._command_for(text) if prefix_matched else None
+        command = self._command_for(text) if trigger_matched else None
         context = "private" if event.is_private_chat() else "group"
-        source = "prefixed" if prefix_matched else "unmatched"
+        source = "prefixed" if prefix_matched else "mention" if mention_matched else "unmatched"
         self._log_info(f"request received context={context} source={source} command={command or 'codex'}")
 
         if not text:
-            if prefix_matched:
+            if trigger_matched:
                 event.stop_event()
                 yield event.plain_result(self._t("help"))
             return
@@ -526,6 +530,60 @@ class AmiyaCodexChat(Star):
             if self._prefix_matches(text, prefix):
                 return text[len(prefix) :].strip(), True
         return text, False
+
+    def _mentioned_self(self, event: AstrMessageEvent) -> bool:
+        self_id = self._event_self_id(event)
+        if not self_id:
+            return False
+
+        for component in self._event_message_chain(event):
+            if self._component_at_target(component) == self_id:
+                return True
+        return False
+
+    def _event_self_id(self, event: AstrMessageEvent) -> str:
+        get_self_id = getattr(event, "get_self_id", None)
+        if callable(get_self_id):
+            try:
+                self_id = get_self_id()
+            except Exception:
+                self_id = ""
+            if self_id not in (None, ""):
+                return str(self_id)
+
+        message_obj = getattr(event, "message_obj", None)
+        self_id = getattr(message_obj, "self_id", "")
+        return str(self_id) if self_id not in (None, "") else ""
+
+    def _event_message_chain(self, event: AstrMessageEvent) -> Iterable[Any]:
+        get_messages = getattr(event, "get_messages", None)
+        if callable(get_messages):
+            try:
+                messages = get_messages()
+            except Exception:
+                messages = None
+            if messages is not None:
+                return messages
+
+        message_obj = getattr(event, "message_obj", None)
+        messages = getattr(message_obj, "message", None)
+        return messages or ()
+
+    @staticmethod
+    def _component_at_target(component: Any) -> str:
+        if isinstance(component, dict):
+            if str(component.get("type", "")).lower() != "at":
+                return ""
+            data = component.get("data", {})
+            target = data.get("qq") if isinstance(data, dict) else None
+            return str(target) if target not in (None, "") else ""
+
+        component_type = str(getattr(component, "type", "")).lower()
+        class_name = component.__class__.__name__.lower()
+        if component_type not in {"at", "componenttype.at"} and class_name not in {"at", "atall"}:
+            return ""
+        target = getattr(component, "qq", "")
+        return str(target) if target not in (None, "") else ""
 
     def _allowed(self, event: AstrMessageEvent) -> bool:
         allowed_users = self._split_csv(str(self._config_value("allow_users", "")))
