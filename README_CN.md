@@ -20,8 +20,10 @@ Amiya Codex Chat 是一个运行在 [AstrBot](https://github.com/AstrBotDevs/Ast
 ## 你需要先准备
 
 1. 运行目标机器上已经安装并登录 Codex CLI。
-2. 如果你已有 AstrBot，确认平台适配器已经能正常收发消息。
-3. AstrBot 进程能执行 `codex`。如果 AstrBot 是 systemd、Docker、screen、pm2 等方式
+2. 如果你要接 QQ 个人号，准备使用 [LLBot](https://luckylillia.com/)
+   作为 OneBot v11 协议端；其他平台按 AstrBot 官方适配器接入。
+3. 如果你已有 AstrBot，确认平台适配器已经能正常收发消息。
+4. AstrBot 进程能执行 `codex`。如果 AstrBot 是 systemd、Docker、screen、pm2 等方式
    启动，确认它的 PATH 里也能找到 Codex。
 
 先验证 Codex：
@@ -47,8 +49,8 @@ data/plugins/astrbot_plugin_amiya_codex/
 ### 用 Codex 一个 prompt 从零部署
 
 如果另一台机器只有 Codex，还没有 AstrBot，可以直接把下面这段话发给 Codex。它会
-从 AstrBot 官方仓库拉取项目、创建环境、安装插件并启动服务；只有 QQ 登录、扫码、
-系统密码这类必须人工介入的步骤才停下来。
+从 AstrBot 官方仓库拉取项目、创建环境、安装插件并启动服务；QQ 个人号默认使用
+LLBot 连接 AstrBot。只有 QQ 登录、扫码、系统密码这类必须人工介入的步骤才停下来。
 
 ```text
 请在这台机器上基于 AstrBot 官方源码仓库端到端部署 AstrBot + Amiya Codex Chat。
@@ -56,7 +58,7 @@ data/plugins/astrbot_plugin_amiya_codex/
 
 规则：
 1. AstrBot 只能使用官方仓库：https://github.com/AstrBotDevs/AstrBot。不要使用非官方 fork。
-2. 不要安装、启动或依赖 LLOneBot/LLBot。如果旧的 LLOneBot/LLBot 进程占用端口，可以停止该进程并在总结里说明；除非我明确要求，不要删除用户数据。
+2. QQ 个人号协议端使用 LLBot：https://luckylillia.com/。macOS 优先使用 GitHub Release 里的 `LLBot-Desktop-macos-arm64.tar.xz`；不要改用其他 QQ 协议端，除非我明确要求。
 3. 使用 Python 3.12 的隔离环境。有 conda 时优先创建 `astrbot-amiya`，并用 `conda run -n astrbot-amiya ...` 执行命令，避免 shell activate 问题。没有 conda 时使用 Python 3.12 venv。只有系统已经安装 uv 时才用 uv，不要强制依赖 uv。
 4. 不要修改系统 Python。不要把本机账号、token、密码、绝对路径写进任何仓库文件。
 
@@ -71,9 +73,10 @@ data/plugins/astrbot_plugin_amiya_codex/
    - python -m unittest discover -s tests -v
 7. 从源码 checkout 用 `python main.py` 启动 AstrBot。源码模式不要直接用 `astrbot run`，除非你安装了 package CLI 并初始化了该目录。如果 6185 端口被占用，用 `DASHBOARD_PORT` 选择其他空闲端口。
 8. 用 screen/tmux/nohup 后台运行 AstrBot，并捕获日志。首次启动可能下载 dashboard 静态资源，WebUI 初始密码会打印在启动日志里。
-9. 输出 WebUI 地址、用户名、初始密码或日志位置、AstrBot 目录、插件目录、启动命令、停止命令，以及你实际跑过的测试。
-10. 如果需要 QQ、OneBot 或其他聊天平台登录或扫码，停下来告诉我需要在 AstrBot WebUI 里配置什么；我完成后你继续检查平台连接。
-11. 最后提醒我在聊天里发送：兔兔 连通测试、兔兔 状态、兔兔 请只回复 OK。
+9. 在 AstrBot WebUI 创建 `OneBot v11` 机器人：启用，反向 WebSocket host 用 `0.0.0.0`，端口用 `6199`，token 留空，除非你也会在 LLBot 里设置同一个 token。
+10. 安装并启动 LLBot Desktop。打开 LLBot WebUI 或左侧 `Bot 配置`，启用 OneBot 11，并添加反向 WebSocket：type=`ws-reverse`，enable=true，url=`ws://127.0.0.1:6199/ws`，messageFormat=`array`，token 留空。登录或扫码步骤必须停下来让我处理。
+11. 在 AstrBot Console 看到 OneBot v11 adapter connected 之后，输出 WebUI 地址、用户名、初始密码或日志位置、AstrBot 目录、插件目录、启动命令、停止命令，以及你实际跑过的测试。
+12. 最后提醒我在聊天里发送：兔兔 连通测试、兔兔 状态、兔兔 请只回复 OK。
 ```
 
 ## 最小配置

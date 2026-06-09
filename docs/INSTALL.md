@@ -14,8 +14,21 @@ Confirm both are true:
 - Your platform adapter can send and receive messages, such as OneBot, QQ
   official, Telegram, Discord, or WeCom.
 
-This plugin does not replace platform adapters and does not handle QQ login,
-OneBot connection setup, or AstrBot provider configuration.
+This plugin does not replace platform adapters and does not handle QQ login or
+AstrBot provider configuration.
+
+For a personal QQ account, prefer
+[LLBot](https://luckylillia.com/) as the OneBot v11 protocol
+implementation. The path is:
+
+```text
+Amiya Codex Chat -> AstrBot -> OneBot v11 reverse WebSocket -> LLBot -> QQ
+```
+
+In AstrBot, create a `OneBot v11` bot with reverse WebSocket host `0.0.0.0` and
+port `6199`. In LLBot, enable OneBot 11 and add a `ws-reverse` connection with URL
+`ws://127.0.0.1:6199/ws`. If AstrBot and LLBot are on different machines,
+replace `127.0.0.1` with the AstrBot host.
 
 ## 2. Prepare Codex CLI
 
@@ -64,9 +77,9 @@ Restart AstrBot or reload plugins.
 
 If the target machine has Codex but not AstrBot yet, let Codex adapt the
 deployment to that environment. It clones AstrBot from the official repository,
-creates an isolated environment, installs Amiya, and starts AstrBot. It should
-only stop for mandatory human steps such as QQ login, QR scanning, or system
-password prompts.
+creates an isolated environment, installs Amiya, and starts AstrBot. Personal QQ
+accounts use LLBot by default. It should only stop for mandatory human steps
+such as QQ login, QR scanning, or system password prompts.
 
 ```text
 Please deploy AstrBot + Amiya Codex Chat end to end on this machine from the official AstrBot source repository.
@@ -74,7 +87,7 @@ Do not ask me for confirmation unless you hit QQ/chat-platform login or QR scan,
 
 Rules:
 1. Use only the official AstrBot repository: https://github.com/AstrBotDevs/AstrBot. Do not use unofficial forks.
-2. Do not install, start, or depend on LLOneBot/LLBot. If an old LLOneBot/LLBot process conflicts with ports, stop that process and report it, but do not delete user data unless I explicitly ask.
+2. Use LLBot for personal QQ account protocol support: https://luckylillia.com/. On macOS, prefer `LLBot-Desktop-macos-arm64.tar.xz` from GitHub Releases. Do not switch to another QQ protocol implementation unless I explicitly ask.
 3. Use Python 3.12 in an isolated environment. Prefer a conda environment named `astrbot-amiya` when conda is available, and run commands with `conda run -n astrbot-amiya ...` to avoid shell activation issues. If conda is unavailable, use a Python 3.12 venv. Use uv only when it is already installed; do not require uv.
 4. Do not modify system Python. Do not write local accounts, tokens, passwords, or absolute machine paths into repository files.
 
@@ -89,9 +102,10 @@ Goals:
    - python -m unittest discover -s tests -v
 7. Start AstrBot from the source checkout with `python main.py`. Do not use `astrbot run` for source mode unless you installed the package CLI and initialized that directory. If port 6185 is busy, choose another free dashboard port with `DASHBOARD_PORT`.
 8. Run AstrBot in the background with screen/tmux/nohup and capture logs. First startup may download dashboard assets, and the initial WebUI password is printed in startup logs.
-9. Report the WebUI URL, username, initial password or log location, AstrBot directory, plugin directory, start command, stop command, and the exact tests you ran.
-10. If QQ, OneBot, or another chat platform requires login or QR scanning, stop and tell me exactly what I must configure in AstrBot WebUI; continue checking the platform connection after I finish.
-11. At the end, remind me to test in chat with: 兔兔 连通测试, 兔兔 状态, 兔兔 请只回复 OK.
+9. In AstrBot WebUI, create a `OneBot v11` bot: enable it, set reverse WebSocket host to `0.0.0.0`, port to `6199`, and leave the token empty unless you also set the same token in LLBot.
+10. Install and start LLBot Desktop. In LLBot WebUI or the left-side `Bot Config` page, enable OneBot 11 and add a reverse WebSocket connection: type=`ws-reverse`, enable=true, url=`ws://127.0.0.1:6199/ws`, messageFormat=`array`, token empty. Stop for me to handle QQ login or QR scanning.
+11. After AstrBot Console shows the OneBot v11 adapter connected, report the WebUI URL, username, initial password or log location, AstrBot directory, plugin directory, start command, stop command, and the exact tests you ran.
+12. At the end, remind me to test in chat with: 兔兔 连通测试, 兔兔 状态, 兔兔 请只回复 OK.
 ```
 
 ## 5. Fill Minimal Configuration

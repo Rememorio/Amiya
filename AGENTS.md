@@ -34,6 +34,8 @@ Docs should be practical and short. A new user should know exactly:
 - what AstrBot must already provide;
 - how to bootstrap AstrBot from the official repository when it is not already
   installed;
+- how QQ personal-account deployments should connect through LLBot and
+  OneBot v11 reverse WebSocket;
 - how to install the plugin;
 - which WebUI fields to fill first;
 - how to verify the plugin without calling Codex;
@@ -113,10 +115,12 @@ GitHub Release notes should be useful to an installer:
   environment, avoid writing secrets or machine-specific paths into repository
   files, and stop only for mandatory human steps such as chat-platform login or
   system password prompts.
-- natural-language install instructions must not install, start, or depend on
-  LLOneBot/LLBot. Use AstrBot source mode with Python 3.12, install dependencies
-  from the official checkout, and start source deployments with `python main.py`
-  unless the package CLI was installed and initialized separately.
+- natural-language install instructions should use LLBot for QQ personal
+  accounts, configure AstrBot as the OneBot v11 reverse WebSocket server, and
+  configure LLBot with a `ws-reverse` connection to AstrBot. Use AstrBot source mode with
+  Python 3.12, install dependencies from the official checkout, and start source
+  deployments with `python main.py` unless the package CLI was installed and
+  initialized separately.
 - include a short license note: AstrBot is AGPL-3.0; this repository does not
   redistribute AstrBot itself.
 
