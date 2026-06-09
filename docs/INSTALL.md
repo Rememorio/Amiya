@@ -143,7 +143,7 @@ Send these messages in chat:
 Expected result:
 
 - `连通测试` replies: plugin and platform path are connected.
-- `状态` shows `SOUL: loaded from SOUL-Amiya.md`: persona loading is correct.
+- `状态` shows `人格：已加载 SOUL-Amiya.md`: persona loading is correct.
 - The third message returns `OK` or a close fixed answer: Codex CLI execution is
   working.
 
