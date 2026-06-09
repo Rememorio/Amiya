@@ -129,7 +129,8 @@ MESSAGES = {
         "session_current_no": "未建立",
         "truncated": "\n\n... 输出已截断 ...",
         "status": (
-            "Amiya Codex Chat v{version}\n"
+            "状态\n"
+            "插件：Amiya Codex Chat v{version}\n"
             "Codex: {codex_binary}\n"
             "Sandbox: {sandbox}\n"
             "Workdir: {workdir}\n"
@@ -187,7 +188,8 @@ MESSAGES = {
         "session_current_no": "not established",
         "truncated": "\n\n... output truncated ...",
         "status": (
-            "Amiya Codex Chat v{version}\n"
+            "Status\n"
+            "Plugin: Amiya Codex Chat v{version}\n"
             "Codex: {codex_binary}\n"
             "Sandbox: {sandbox}\n"
             "Workdir: {workdir}\n"
