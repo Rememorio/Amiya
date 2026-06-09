@@ -362,6 +362,18 @@ class PluginCoreTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(event.stopped)
         self.assertEqual(results, [])
 
+    async def test_status_reply_does_not_retrigger_default_ascii_prefix(self) -> None:
+        plugin = self._plugin({"unmatched_policy": "silent"})
+        event = _FakeEvent(message_str=plugin._status_text(), admin=False)
+
+        results = []
+        async for result in plugin.on_prefixed_message(event):
+            results.append(result)
+
+        self.assertTrue(event.stopped)
+        self.assertEqual(results, [])
+        self.assertFalse(plugin._strip_known_prefix(plugin._status_text())[1])
+
     def test_soul_file_can_select_eyjafjalla(self) -> None:
         plugin = self._plugin({"soul_file": "SOUL-Eyjafjalla.md"})
         soul, state = plugin._resolve_soul()
