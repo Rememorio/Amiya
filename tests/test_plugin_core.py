@@ -302,7 +302,7 @@ class PluginCoreTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertTrue(event.stopped)
         self.assertEqual(len(results), 1)
-        self.assertIn("Amiya Codex Chat v", results[0])
+        self.assertIn("Codex Chat v", results[0])
 
     async def test_middle_mention_self_routes_when_other_bot_is_first(self) -> None:
         plugin = self._plugin(
@@ -381,6 +381,46 @@ class PluginCoreTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("艾雅法拉", soul)
         self.assertIn("SOUL-Eyjafjalla.md", state)
 
+    def test_soul_file_can_select_requiem_and_customize_replies(self) -> None:
+        plugin = self._plugin({"soul_file": "SOUL-Requiem.md", "command_prefixes": "安魂曲,Requiem"})
+        soul, state = plugin._resolve_soul()
+
+        self.assertIn("安魂曲", soul)
+        self.assertIn("E.T.D", soul)
+        self.assertNotIn("message.permission_denied", soul)
+        self.assertIn("SOUL-Requiem.md", state)
+        self.assertIn("安魂曲 帮助", plugin._t("help"))
+        self.assertEqual(plugin._t("permission_denied"), "老板，这份委托……安魂曲还不能接。")
+        self.assertIn("插件：安魂曲 Codex Chat v", plugin._status_text())
+
+    def test_soul_front_matter_can_customize_builtin_replies(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            soul_path = Path(tmp) / "SOUL-Test.md"
+            soul_path.write_text(
+                "\n".join(
+                    [
+                        "---",
+                        "display_name: 测试人格",
+                        "user_title: 主管",
+                        "help_prefix: 测试",
+                        "message.permission_denied: 主管，这里不让进。",
+                        "---",
+                        "# 测试人格",
+                        "",
+                        "正文会发送给 Codex。",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            plugin = self._plugin({"soul_file": str(soul_path)})
+
+            soul, state = plugin._resolve_soul()
+            self.assertEqual(soul, "# 测试人格\n\n正文会发送给 Codex。")
+            self.assertIn("已配置绝对路径", state)
+            self.assertIn("测试 帮助", plugin._t("help"))
+            self.assertEqual(plugin._t("permission_denied"), "主管，这里不让进。")
+            self.assertIn("插件：测试人格 Codex Chat v", plugin._status_text())
+
     def test_reply_and_sender_sanitization(self) -> None:
         plugin = self._plugin()
         self.assertEqual(plugin._sanitize_reply("see /tmp/project/file.py"), "see <local path>")
@@ -398,6 +438,7 @@ class PluginCoreTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertIn("SOUL-Amiya.md", names)
         self.assertIn("SOUL-Eyjafjalla.md", names)
+        self.assertIn("SOUL-Requiem.md", names)
 
 
 if __name__ == "__main__":

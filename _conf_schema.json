@@ -60,7 +60,7 @@
   "soul_file": {
     "description": "Persona file path.",
     "type": "string",
-    "hint": "Relative paths are resolved from the plugin directory. Bundled examples include SOUL-Amiya.md and SOUL-Eyjafjalla.md.",
+    "hint": "Relative paths are resolved from the plugin directory. Bundled examples include SOUL-Amiya.md, SOUL-Eyjafjalla.md, and SOUL-Requiem.md. Optional SOUL front matter can customize display_name, user_title, help_prefix, and message.* replies.",
     "default": "SOUL-Amiya.md"
   },
   "strip_thinking": {
