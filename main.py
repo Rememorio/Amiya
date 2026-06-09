@@ -132,14 +132,14 @@ MESSAGES = {
         "status": (
             "状态\n"
             "插件：{display_name} Codex Chat v{version}\n"
-            "Codex: {codex_binary}\n"
-            "Sandbox: {sandbox}\n"
-            "Workdir: {workdir}\n"
-            "SOUL: {soul}\n"
-            "Session: {session}\n"
-            "Unmatched: {unmatched_policy}\n"
-            "Language: {language}\n"
-            "Admin only: {require_admin}"
+            "Codex 命令：{codex_binary}\n"
+            "沙箱：{sandbox}\n"
+            "工作目录：{workdir}\n"
+            "人格：{soul}\n"
+            "会话：{session}\n"
+            "未匹配消息：{unmatched_policy}\n"
+            "语言：{language}\n"
+            "群聊权限：{access_policy}"
         ),
         "soul": "人格文件：{soul}",
         "loaded": "已加载 {path}",
@@ -149,6 +149,16 @@ MESSAGES = {
         "absolute_path": "已配置绝对路径",
         "yes": "是",
         "no": "否",
+        "sandbox_read_only": "只读 (read-only)",
+        "sandbox_workspace_write": "工作区可写 (workspace-write)",
+        "sandbox_danger_full_access": "完全访问 (danger-full-access)",
+        "unmatched_pass": "交给 AstrBot 继续处理 (pass)",
+        "unmatched_silent": "静默停止 (silent)",
+        "unmatched_codex": "交给 Codex (codex)",
+        "language_zh_cn": "简体中文 (zh-CN)",
+        "language_en_us": "英文 (en-US)",
+        "access_admin": "管理员或白名单",
+        "access_all": "所有用户",
     },
     "en-US": {
         "help": (
@@ -198,7 +208,7 @@ MESSAGES = {
             "Session: {session}\n"
             "Unmatched: {unmatched_policy}\n"
             "Language: {language}\n"
-            "Admin only: {require_admin}"
+            "Access: {access_policy}"
         ),
         "soul": "Persona file: {soul}",
         "loaded": "loaded from {path}",
@@ -208,6 +218,16 @@ MESSAGES = {
         "absolute_path": "absolute path configured",
         "yes": "yes",
         "no": "no",
+        "sandbox_read_only": "read-only",
+        "sandbox_workspace_write": "workspace-write",
+        "sandbox_danger_full_access": "danger-full-access",
+        "unmatched_pass": "pass",
+        "unmatched_silent": "silent",
+        "unmatched_codex": "codex",
+        "language_zh_cn": "zh-CN",
+        "language_en_us": "en-US",
+        "access_admin": "admins or allow-listed users",
+        "access_all": "all users",
     },
 }
 
@@ -1044,14 +1064,38 @@ class AmiyaCodexChat(Star):
             "status",
             version=PLUGIN_VERSION,
             codex_binary=str(self._config_value("codex_binary", "codex")).strip() or "codex",
-            sandbox=self._sandbox(),
+            sandbox=self._sandbox_label(),
             workdir=self._workdir_label(),
             soul=soul_state,
             session=self._session_summary(),
-            unmatched_policy=self._unmatched_policy(),
-            language=self._language(),
-            require_admin=self._t("yes") if self._config_bool("require_admin", True) else self._t("no"),
+            unmatched_policy=self._unmatched_policy_label(),
+            language=self._language_label(),
+            access_policy=self._access_policy_label(),
         )
+
+    def _sandbox_label(self) -> str:
+        return self._t(
+            {
+                "read-only": "sandbox_read_only",
+                "workspace-write": "sandbox_workspace_write",
+                "danger-full-access": "sandbox_danger_full_access",
+            }[self._sandbox()]
+        )
+
+    def _unmatched_policy_label(self) -> str:
+        return self._t(
+            {
+                "pass": "unmatched_pass",
+                "silent": "unmatched_silent",
+                "codex": "unmatched_codex",
+            }[self._unmatched_policy()]
+        )
+
+    def _language_label(self) -> str:
+        return self._t({"zh-CN": "language_zh_cn", "en-US": "language_en_us"}[self._language()])
+
+    def _access_policy_label(self) -> str:
+        return self._t("access_admin") if self._config_bool("require_admin", True) else self._t("access_all")
 
     async def _run_codex(
         self,

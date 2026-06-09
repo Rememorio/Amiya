@@ -374,6 +374,23 @@ class PluginCoreTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(results, [])
         self.assertFalse(plugin._strip_known_prefix(plugin._status_text())[1])
 
+    def test_status_text_localizes_chinese_labels_and_values(self) -> None:
+        plugin = self._plugin({"soul_file": "SOUL-Amiya.md", "unmatched_policy": "silent"})
+        status = plugin._status_text()
+
+        self.assertTrue(status.startswith("状态\n插件：阿米娅 Codex Chat v"))
+        self.assertIn("Codex 命令：codex", status)
+        self.assertIn("沙箱：只读 (read-only)", status)
+        self.assertIn("工作目录：AstrBot 进程目录", status)
+        self.assertIn("人格：已加载 SOUL-Amiya.md", status)
+        self.assertIn("会话：开启，活跃", status)
+        self.assertIn("未匹配消息：静默停止 (silent)", status)
+        self.assertIn("语言：简体中文 (zh-CN)", status)
+        self.assertIn("群聊权限：管理员或白名单", status)
+        self.assertNotIn("Sandbox:", status)
+        self.assertNotIn("Unmatched:", status)
+        self.assertNotIn("Admin only:", status)
+
     def test_soul_file_can_select_eyjafjalla(self) -> None:
         plugin = self._plugin({"soul_file": "SOUL-Eyjafjalla.md"})
         soul, state = plugin._resolve_soul()
