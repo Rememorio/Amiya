@@ -113,6 +113,10 @@ GitHub Release notes should be useful to an installer:
   environment, avoid writing secrets or machine-specific paths into repository
   files, and stop only for mandatory human steps such as chat-platform login or
   system password prompts.
+- natural-language install instructions must not install, start, or depend on
+  LLOneBot/LLBot. Use AstrBot source mode with Python 3.12, install dependencies
+  from the official checkout, and start source deployments with `python main.py`
+  unless the package CLI was installed and initialized separately.
 - include a short license note: AstrBot is AGPL-3.0; this repository does not
   redistribute AstrBot itself.
 

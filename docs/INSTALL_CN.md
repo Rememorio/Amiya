@@ -63,21 +63,29 @@ SOUL-Eyjafjalla.md
 扫码、系统密码等必须人工处理的步骤才停下来。
 
 ```text
-请在这台机器上端到端部署 AstrBot + Amiya Codex Chat。
+请在这台机器上基于 AstrBot 官方源码仓库端到端部署 AstrBot + Amiya Codex Chat。
 除非遇到 QQ/聊天平台登录或扫码、系统密码/sudo、网络不可用、磁盘权限不足这些必须人工处理的步骤，不要再向我确认；请自己选择安全默认值并继续。
 
+规则：
+1. AstrBot 只能使用官方仓库：https://github.com/AstrBotDevs/AstrBot。不要使用非官方 fork。
+2. 不要安装、启动或依赖 LLOneBot/LLBot。如果旧的 LLOneBot/LLBot 进程占用端口，可以停止该进程并在总结里说明；除非我明确要求，不要删除用户数据。
+3. 使用 Python 3.12 的隔离环境。有 conda 时优先创建 `astrbot-amiya`，并用 `conda run -n astrbot-amiya ...` 执行命令，避免 shell activate 问题。没有 conda 时使用 Python 3.12 venv。只有系统已经安装 uv 时才用 uv，不要强制依赖 uv。
+4. 不要修改系统 Python。不要把本机账号、token、密码、绝对路径写进任何仓库文件。
+
 目标：
-1. 从官方仓库 https://github.com/AstrBotDevs/AstrBot 克隆或更新 AstrBot。不要使用非官方 fork。
-2. 创建隔离 Python 环境。优先使用 conda 环境 `astrbot-amiya`；如果没有 conda，就使用 Python 3.12 venv 或 uv。不要修改系统 Python。
-3. 安装 AstrBot，并执行必要的初始化。需要设置 WebUI 密码时，生成一个随机本地密码，最后只在总结里告诉我，不要写进仓库。
-4. 把 https://github.com/Rememorio/Amiya 克隆或更新到 AstrBot 的 `data/plugins/astrbot_plugin_amiya_codex`。
-5. 在插件目录运行：
+1. 把 https://github.com/AstrBotDevs/AstrBot 克隆或更新到一个 AstrBot 工作目录。
+2. 在这个源码 checkout 中安装 AstrBot 依赖。可用 uv 时执行 `uv sync`；否则在 AstrBot 目录执行 `python -m pip install -U pip` 和 `python -m pip install -r requirements.txt`。
+3. 在 AstrBot 目录下创建 `data/plugins` 和 `data/config`。
+4. 把 https://github.com/Rememorio/Amiya 克隆或更新到 `data/plugins/astrbot_plugin_amiya_codex`。
+5. 在 AstrBot 的 `data/config` 写入本地插件配置：soul_file=SOUL-Amiya.md，command_prefixes=兔兔,Amiya,阿米娅，sandbox=read-only，require_admin=true，session_enabled=true，unmatched_policy=silent。首次部署先用 `silent`，因为 AstrBot 可能还没有配置 provider 模型。
+6. 在插件目录运行：
    - python -m py_compile main.py scripts/package.py tests/test_plugin_core.py
    - python -m unittest discover -s tests -v
-6. 尽量写入本地 AstrBot 插件配置：soul_file=SOUL-Amiya.md，command_prefixes=兔兔,Amiya,阿米娅，sandbox=read-only，require_admin=true，session_enabled=true。如果 AstrBot 没有配置 provider 模型，也设置 unmatched_policy=silent，避免无前缀普通消息落到 AstrBot 默认 LLM 链路报错。不要把本机账号、token、绝对路径写进 Amiya 仓库文件。
-7. 启动 AstrBot，优先用 screen/tmux/nohup 这类后台方式。输出 WebUI 地址、用户名、临时密码或密码设置方式、AstrBot 目录、插件目录、启动/停止命令。
-8. 如果需要 QQ、OneBot 或其他聊天平台登录，停下来告诉我具体要扫码或登录什么；我完成后你继续检查平台连接。
-9. 最后提醒我在聊天里发送：兔兔 连通测试、兔兔 状态、兔兔 请只回复 OK。
+7. 从源码 checkout 用 `python main.py` 启动 AstrBot。源码模式不要直接用 `astrbot run`，除非你安装了 package CLI 并初始化了该目录。如果 6185 端口被占用，用 `DASHBOARD_PORT` 选择其他空闲端口。
+8. 用 screen/tmux/nohup 后台运行 AstrBot，并捕获日志。首次启动可能下载 dashboard 静态资源，WebUI 初始密码会打印在启动日志里。
+9. 输出 WebUI 地址、用户名、初始密码或日志位置、AstrBot 目录、插件目录、启动命令、停止命令，以及你实际跑过的测试。
+10. 如果需要 QQ、OneBot 或其他聊天平台登录或扫码，停下来告诉我需要在 AstrBot WebUI 里配置什么；我完成后你继续检查平台连接。
+11. 最后提醒我在聊天里发送：兔兔 连通测试、兔兔 状态、兔兔 请只回复 OK。
 ```
 
 ## 5. 填最小配置
